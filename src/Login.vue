@@ -51,9 +51,9 @@ export default {
         this.password = "";
         this.username = "";
         // res.isSampling为true说明前端上次关闭时后端正在采集
-        this.SETCOLLECTION(res.isSampling);
-        sessionStorage.setItem('model', res.isSampling);
-        sessionStorage.setItem('samplingDbId', res.dbId)
+        this.SETCOLLECTION(res.data.isSampling);
+        sessionStorage.setItem('model', res.data.isSampling);
+        sessionStorage.setItem('samplingDbId', res.data.dbId)
         this.$router.push("/homedata");
       })
 

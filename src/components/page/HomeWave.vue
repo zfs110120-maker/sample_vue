@@ -2,7 +2,7 @@
 <template>
   <div class="wave-con">
     <div class="wave-table-back">
-
+      <div class="wave-arrow-left" @click="goTable"></div>
     </div>
     <div class="left">
       <div class="change-con" @click="changeEchart">
@@ -38,7 +38,7 @@
       <div class="btn-con">
         <button type="button" class="btn-previous" :disabled='disable' @click="previous(1)">上一个</button>
         <button type="button" class="btn-next" :disabled='disable' @click="previous(2)">下一个</button>
-        <button :disabled='disable' type="button" class="btn-filter" @click="filterdatasend">{{filteringName}}</button>
+        <button type="button" class="btn-filter" @click="filterdatasend">{{ filteringName }}</button>
       </div>
     </div>
   </div>
@@ -53,7 +53,7 @@ export default {
   props: {
     tableId: {
       type: Number,
-      default: 0
+      default: null
     }
   },
   components: {
@@ -85,7 +85,7 @@ export default {
 		 id:"",
      tableData:[],
      index:"",
-     filteringName:"滤波",
+     filteringName: "滤波",
      disable: false,
      pointx:[],
      showMoreLine: false
@@ -95,8 +95,9 @@ export default {
     tableId: {
       handler(value) {
         this.id = value;
-        this.getWaveData(value)
-        this.getDetail(value)
+        if (value) {
+          this.getWaveData(value)
+        }
       },
       immediate: true
     }
@@ -108,89 +109,60 @@ export default {
 		}
 	},
   mounted(){
-    // let arr = [];
-    // arr.push(this.getList())
-    // console.log(this.checkObj.id,this.checkId);
-    // if(this.checkObj.id){
-	  //   this.id = this.checkObj.id;
-    //   Promise.all(arr).then(res=>{
-    //     this.index = this.tableData.findIndex((item)=>item === this.checkObj.id);
-    //   })
-    //   this.bigWavedatasend();
-    // }else if(this.checkId){
-		// 	this.id = this.checkId;
-    //   Promise.all(arr).then(res=>{
-    //     this.index = this.tableData.findIndex((item)=>item === this.checkId);
-    //   })
-		// 	this.bigWavedatasend();
-		// }else{
-    //   this.disable = true;
-    // }
   },
   computed: {
     ...mapState(['checkObj','checkId']),
   },
   methods:{
+    goTable() {
+      this.$emit('goTable', true);
+    },
     changeEchart() {
       this.showMoreLine = !this.showMoreLine;
     },
     getWaveData(value) {
-      this.$http.get(`/wave/getWave/${value}`).then(res=>{
-        if(res.code === 200){
-          this.WaveformData = res.data.wave;
-          console.log(this.WaveformData)
-        }
-        else {
-          this.$confirm("已经是最后一条数据了", '提示', {
-            type: 'warning',
-            customClass: "errormessage",
-            showCancelButton: false,
-            center: "true"
-          }).then(() => {
-          }).catch(() => {
-          });
-        }
-      })
-    },
-
-    getDetail(value) {
-      this.$http.get(`/list/details/${value}`).then(res=>{
-        if(res.code === 200){
-          const data = res.data
-          this.list[0].content = value;
-          this.list[1].content = data.time;
-          this.list[2].content = data.deviceName;
-          this.list[3].content = data.head1;
-          this.list[4].content = data.head2;
-          this.list[5].content = data.head3;
-          this.list[6].content = data.head4;
-          this.list2[0].content = data.onePassTwo;
-          this.list2[1].content = data.onePassThree;
-          this.list2[2].content = data.onePassFour;
-          this.list2[3].content = data.twoPassThree;
-          this.list2[4].content = data.twoPassFour;
-          this.list2[5].content = data.threePassFour;
-          this.information = data.inf
-        }
+      this.$http.get(`/data/wave_graph?day=${sessionStorage.getItem('toDay')}&id=${value}&getInfo=true`).then(res=>{
+        this.WaveformData = res.data;
+        const info = res.data.info;
+        this.list[0].content = info.signalTime;
+        this.list[1].content = info.duration;
+        this.list[2].content = info.path;
+        this.list[3].content = info.cList[0];
+        this.list[4].content = info.cList[1];
+        this.list[5].content = info.cList[2];
+        this.list[6].content = info.cList[3];
+        this.list2[0].content = info.time12;
+        this.list2[1].content = info.time13;
+        this.list2[2].content = info.time14;
+        this.list2[3].content = info.time23;
+        this.list2[4].content = info.time24;
+        this.list2[5].content = info.time34;
+        this.information = info.note
+        this.pointx = []
+        this.WaveformData.channels.forEach((item, index) => {
+          this.pointx.push(item.head_x)
+        })
       })
     },
 
     preservation(){   //说明保存
-      this.$http.put(`/wave/editInf/${this.id}`,{ newInf: this.information }).then(res=>{
-        if (res.code === 200){
-          this.$confirm(res.message, '提示', {
-            type: 'success',
-            showCancelButton: false,
-            center: "true"
-          }).then(() => {
-          }).catch(() => {
-          });
-        }
+      this.$http.put('/signal',{
+        id: this.id,
+        day: sessionStorage.getItem('toDay'),
+        note: this.information
+      }).then(res=>{
+        this.$confirm('更新成功！', '提示', {
+          type: 'success',
+          showCancelButton: false,
+          center: "true"
+        }).then(() => {
+        }).catch(() => {
+        });
       })
     },
     previous(data){   //上一个下一个
       if(data === 1){
-        if(this.id < 0){
+        if(this.id <= 1){
           this.$confirm("已经是第一条数据了", '提示', {
             type: 'warning',
             customClass: "errormessage",
@@ -202,60 +174,53 @@ export default {
         }else{
           this.id -= 1
           this.getWaveData(this.id);
-          this.getDetail(this.id)
         }
       }else{
         this.id += 1
         this.getWaveData(this.id);
-        this.getDetail(this.id)
       }
       this.filteringName = '滤波';
     },
 
     filterdatasend(){     //滤波
       if(this.filteringName === '滤波'){
-        this.$http.get(`/wave/filterWave/${this.id}`).then(res=>{
-          if(res.code === 200){
-            this.WaveformData = res.data.wave;
-            this.filteringName = "恢复";
-            // this.information = res.infData.remark;
-            this.disable = false;
-            // this.list[0].content = res.infData.id;
-            // this.list[1].content = res.infData.time;
-            // this.list[2].content = res.infData.equipment;
-            // this.list[3].content = res.infData.channel1;
-            // this.list[4].content = res.infData.channel2;
-            // this.list[5].content = res.infData.channel3;
-            // this.list[6].content = res.infData.channel4;
-
-            // this.list2[0].content = res.infData.time12 ? (res.infData.time12).toFixed(1) : "";
-            // this.list2[1].content = res.infData.time13 ? (res.infData.time13).toFixed(1) : "";
-            // this.list2[2].content = res.infData.time14 ? (res.infData.time14).toFixed(1) : "";
-            // this.list2[3].content = res.infData.time23 ? (res.infData.time23).toFixed(1) : "";
-            // this.list2[4].content = res.infData.time24 ? (res.infData.time24).toFixed(1) : "";
-            // this.list2[5].content = res.infData.time34 ? (res.infData.time34).toFixed(1) : "";
-            // this.pointx = [];
-            // this.WaveformData.forEach(item=>{
-            //   this.pointx.push(item.pointx)
-            // })
-          }
+        this.$http.get(`/data/wave_graph?day=${sessionStorage.getItem('toDay')}&id=${this.id}&getInfo=true&filterWave=true`).then(res=>{
+          this.WaveformData = res.data;
+          const info = res.data.info;
+          this.list[0].content = info.signalTime;
+          this.list[1].content = info.duration;
+          this.list[2].content = info.path;
+          this.list[3].content = info.cList[0];
+          this.list[4].content = info.cList[1];
+          this.list[5].content = info.cList[2];
+          this.list[6].content = info.cList[3];
+          this.list2[0].content = info.time12;
+          this.list2[1].content = info.time13;
+          this.list2[2].content = info.time14;
+          this.list2[3].content = info.time23;
+          this.list2[4].content = info.time24;
+          this.list2[5].content = info.time34;
+          this.information = info.note
+          this.pointx = []
+          this.WaveformData.channels.forEach((item, index) => {
+            this.pointx.push(item.head_x)
+          })
+          this.filteringName = "恢复";
         })
       }else{
         this.getWaveData(this.id);
-        this.getDetail(this.id)
         this.filteringName = "滤波";
       }
     },
     /** 选择小红点的时候触发 */
     selectedComponent1(data) {
-      console.log(data);
       this.pointx[data.componentIndex]  = Number(data.name)
       this.list2[0].content = (this.pointx[1]!= null && this.pointx[0]!= null) ? (this.pointx[1]-this.pointx[0]).toFixed(1) : "";
       this.list2[1].content = (this.pointx[2]!= null && this.pointx[0]!= null) ? (this.pointx[2]-this.pointx[0]).toFixed(1) : "";
       this.list2[2].content = (this.pointx[3]!= null && this.pointx[0]!= null) ? (this.pointx[3]-this.pointx[0]).toFixed(1) : "";
-      this.list2[3].content = (this.pointx[2]!= null && this.pointx[0]!= null) ? (this.pointx[2]-this.pointx[1]).toFixed(1) : "";
-      this.list2[4].content = (this.pointx[3]!= null && this.pointx[0]!= null) ? (this.pointx[3]-this.pointx[1]).toFixed(1) : "";
-      this.list2[5].content = (this.pointx[3]!= null && this.pointx[0]!= null) ? (this.pointx[3]-this.pointx[2]).toFixed(1) : "";
+      this.list2[3].content = (this.pointx[2]!= null && this.pointx[1]!= null) ? (this.pointx[2]-this.pointx[1]).toFixed(1) : "";
+      this.list2[4].content = (this.pointx[3]!= null && this.pointx[1]!= null) ? (this.pointx[3]-this.pointx[1]).toFixed(1) : "";
+      this.list2[5].content = (this.pointx[3]!= null && this.pointx[2]!= null) ? (this.pointx[3]-this.pointx[2]).toFixed(1) : "";
     },
   }
 }
@@ -272,6 +237,27 @@ export default {
   height: 100%;
   background: #fff;
   position: relative;
+  border-right: 1px solid #ccc;
+  display: flex;
+  flex-direction: column;
+}
+
+.wave-table-back {
+  width: 99px;
+  height: 100%;
+  background-color: #ccc;
+  position: relative;
+}
+
+.wave-arrow-left {
+  position: absolute;
+  top: 35px;
+  right: 29px;
+  width: 18px;
+  height: 18px;
+  border-top: 4px solid #3E80BD;
+  border-right: 4px solid #3E80BD;
+  transform: rotate(45deg);
 }
 
 .change-con {
@@ -296,7 +282,6 @@ export default {
   width: 495px;
   height: 100%;
   overflow-y: scroll;
-  border-left: 1px solid #ccc;
 }
 
 .right_card {

@@ -17,6 +17,12 @@ const mutations = {
   SETANALYSE(state,value) {
     state.analyse = value;
   },
+  SETSCATTERIDS(state,value) {
+    state.scatterIds = value;
+  },
+  SETDATASETDATE(state,value) {
+    state.dataSetid = value;
+  }
 }
 
 export default mutations

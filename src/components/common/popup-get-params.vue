@@ -10,12 +10,12 @@
 
       <div class="content-con">
         <p>时基设置</p>
-        <input v-model="timeBase" oninput = "value=value.replace(/[^\d]/g,'')" placeholder="请输入内容" class="file-name">
+        <input v-model="timeBase" oninput="value=value.replace(/[^\d]/g,'')" placeholder="请输入内容" class="file-name">
       </div>
 
       <div class="content-con">
         <p>阈值设置</p>
-        <input v-model="threshold" oninput = "value=value.replace(/[^\d]/g,'')" placeholder="请输入内容" class="file-name">
+        <input v-model="threshold" oninput="value=value.replace(/[^\d]/g,'')" placeholder="请输入内容" class="file-name">
       </div>
 
       <div class="btn-group">
@@ -40,8 +40,8 @@ export default {
   },
   data() {
     return {
-      timeBase: '',
-      threshold: '',
+      timeBase: null,
+      threshold: null,
       isShowGetDialog: false
     }
   },
@@ -55,24 +55,13 @@ export default {
       this.$emit('update:showGetDialog', false);
       this.$emit('cancleCollect', true)
     },
-    // setStartTime() {
-    //   this.$http.get('/location/setStartTime').then(res=>{
-    //     if (res.code === 200) {
-    //       this.$notify({
-    //         title: res.message,
-    //         type: 'success',
-    //         position: 'bottom-right',
-    //       });
-    //     }
-    //   })
-    // },
     handCollectionOk() {
       this.$emit('cancleCollect', false)
       console.log(this.sourceId)
       this.$http.post('/sample/start', {
         dbId: this.sourceId,
-        argTime: this.timeBase,
-        argThreshold: this.threshold
+        argTime: Number(this.timeBase),
+        argThreshold: Number(this.threshold)
       }).then(res=>{
         // this.setStartTime();
         this.$emit('update:showGetDialog', false);

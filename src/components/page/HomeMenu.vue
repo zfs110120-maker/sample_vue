@@ -95,7 +95,8 @@ export default {
     if(this.collection || sessionStorage.getItem('model') === 'true') {
       this.isShowLeft = false;
       this.$refs.dataConfigTree.setCurrentKey(sessionStorage.getItem('samplingDbId'));
-      this.choseDb(sessionStorage.getItem('choseDbId'));
+      this.sourceId = sessionStorage.getItem('samplingDbId');
+      this.choseDb(sessionStorage.getItem('samplingDbId'));
     }
   },
   mounted(){
@@ -188,10 +189,6 @@ export default {
     },
 
     choseDb(value) {
-      // 获取右侧页面信息的接口
-      // this.$http.get(`/db/${value}`).then(res=>{
-      //   sessionStorage.setItem('choseDbId', value)
-      // })
       sessionStorage.setItem('choseDbId', value)
     },
 

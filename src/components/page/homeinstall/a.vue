@@ -214,7 +214,6 @@ export default {
       myEchart.on("brushselected", brushselectedHeadle);
 
       myEchart.getZr().on('click', data => {
-        console.log(data,'pppp');
         let list = [data.offsetX, data.offsetY]
         let index = 0
         // 判断点击的坐标在不在坐标系内
@@ -228,14 +227,27 @@ export default {
         this.$emit("selectedComponent", index);
         this.selectedSeriesIndex = index
       })
-
+      let coordRange = []
+      if (sessionStorage.getItem('startTime')) {
+        this.xAxisData.forEach((element, index)=> {
+          if (element == sessionStorage.getItem('startTime')) {
+            coordRange.push(index)
+          }
+          if (element == sessionStorage.getItem('endTime')) {
+            coordRange.push(index)
+          }
+        });
+      }
+      else {
+        coordRange = [100, 200]
+      }
       // 初始化默认的框选范围
       myEchart.dispatchAction({
         type: "brush",
         areas: [
           {
             brushType: "lineX",
-            coordRange: [100, 200],
+            coordRange: coordRange,
             gridIndex: 4,
           },
         ],

@@ -12,7 +12,8 @@ export default {
   data() {
     return {
       myEchart: null,
-      step: -20,
+      step: 0,
+      stepNum: 5,
       sum:0,    //x轴的总和
       timer:null,
       zAxis3D:{},
@@ -21,12 +22,8 @@ export default {
   },
   props: {
     chartData: {
-      type: Array,
-      default: () => [],
-    },
-    phaseShiftNum: {
-      type: Number,
-      default: 0
+      type: Object,
+      default: () => {},
     },
     unit:{
       type: String,
@@ -35,36 +32,33 @@ export default {
   computed: {
     showData({ chartData }) {
       let list = []
-      // chartData = chartData[0]
-      let { xdata, ydata, zdata } = chartData
+      let { x, y, z } = chartData
       let num = 0
-      if(this.unit === 'mV'){
+      if (this.unit === 'mV') {
         num = 0
-      }else{
+      } else {
         num = 80
       }
-      chartData.forEach((item, index) => {
-        list.push([item.xpoint, item.ypoint, item.zpoint + num])
-      })
-      // for (let i = 0; i < xdata.length; i++) {
-      //   list.push([xdata[i], ydata[i], zdata[i]+num])
-      // }
-      if(this.unit != 'mV'){
-        list.unshift([0, 0, 70])
+      for (let i = 0; i < x.length; i++) {
+        list.push([x[i], y[i], z[i] + num])
       }
+      // if(this.unit != 'mV'){
+      //   list.unshift([0, 0, 70])
+      // }
       return list
     },
     echartOptions({step}) {
-      let min = step / 10
-      let max = (step + 20)/10
+      let min = this.chartData.x[step]
+      let max = this.chartData.x[step + this.stepNum]
+      const echartData = this.showData.slice(step, step + this.stepNum);
       if(this.unit === 'mV'){
 		    this.zAxis3D = {
           name: '',
           type: "value",
-          splitNumber: 3,
+          splitNumber: 5,
           data: [0, 2000],
           axisLabel:{
-            margin:40,
+            margin:20,
             formatter:(parmas)=>{
               return parmas
             }
@@ -72,11 +66,11 @@ export default {
         }
       }else{
 		    this.zAxis3D = {
+          name: '',
           type: "value",
+          splitNumber: 3,
           axisLabel:{
-            margin:40,
-            min:0,
-            max:80,
+            margin:20,
             interval:5,
             formatter:(parmas)=>{
               return parmas - 80
@@ -89,7 +83,7 @@ export default {
           type: "value",
           name: '',
           containLabel: true,
-          splitNumber: 5,
+          splitNumber: 3,
           min,
           max,
           axisLabel:{
@@ -126,7 +120,7 @@ export default {
             distance: 280,
             alpha: 15,
           },
-          top:-40,
+          top: -40,
           axisPointer:{
             show:false,
           },
@@ -135,8 +129,7 @@ export default {
           {
             type: "bar3D",
             barSize: 3,
-            // shading: 'lambert',
-            data: this.showData,
+            data: echartData,
             grid3DIndex:1,
             itemStyle: {
               color: ({data}) => {
@@ -205,30 +198,30 @@ export default {
       handler(){
         clearInterval(this.timer);
         this.timer = null;
-        this.step = -20;
+        this.step = 0;
         // this.autoMove(data.length);
-        this.循环前进();
+        this.autoMove();
       }
     }
   },
   mounted() {
     this.init();
-    let data = []
-    this.chartData.forEach((item, index) => {
-      data.push(item.xpoint)
-    })
-    // let data = this.chartData[0].xdata;
+    let data = this.chartData.x
     if(data.length>0){
       this.sum = data[data.length-1]
-      this.循环前进();
+      this.autoMove();
     }
   },
   methods: {
-    循环前进() {
+    autoMove() {
       this.timer = setInterval(() => {
-        this.step += 3
-        if(this.step > this.sum*10) this.step = -20
-      }, 300);
+        const stepNum = this.chartData.x.length - 1 - this.step
+        if (stepNum < this.stepNum) {
+          this.stepNum = stepNum
+        }
+        this.step += this.stepNum;
+        if(this.step >= this.chartData.x.length - 1) this.step = 0
+      }, 1000);
       this.$once("hook:beforeDestroy", () => {
         clearInterval(this.timer);
         this.timer = null;

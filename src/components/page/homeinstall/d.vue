@@ -1,7 +1,7 @@
 <template>
 <div class="content" :class="whatSize === 2 && 'content-top'">
   <div ref="echart" class="echart"></div>
-  <div class="mv" v-show="whatSize === 2">mV</div>
+  <!-- <div class="mv" v-show="whatSize === 2">mV</div> -->
 </div>
 </template>
 
@@ -29,59 +29,21 @@ export default {
   },
   computed: {
     xAxisData({ chartData }) {
-      return chartData.datax;
+      return chartData.t;
     },
     yAxisData({ chartData }) {
-      let yAxisArr = []
-      if (chartData.wave1) {
-        yAxisArr.push(chartData.wave1);
-      }
-
-      if (chartData.wave2) {
-        yAxisArr.push(chartData.wave2);
-      }
-
-      if (chartData.wave3) {
-        yAxisArr.push(chartData.wave3);
-      }
-
-      if (chartData.wave4) {
-        console.log(chartData.wave4);
-        yAxisArr.push(chartData.wave4);
-      }
-      return yAxisArr
+      return chartData.channels;
     },
     point({ chartData }) {
-      let data = []
-
-      if (chartData.wave1Pointx) {
-        data.push(chartData.datax.indexOf(chartData.wave1Pointx))
-      }
-
-      if (chartData.wave2Pointx) {
-        data.push(chartData.datax.indexOf(chartData.wave2Pointx))
-      }
-
-      if (chartData.wave3Pointx) {
-        data.push(chartData.datax.indexOf(chartData.wave3Pointx))
-      }
-
-      if (chartData.wave4Pointx) {
-        console.log(chartData.wave4Pointx)
-        data.push(chartData.datax.indexOf(chartData.wave4Pointx))
-      }
-      // let data = chartData.map((item) => item.datax.indexOf(item.pointx));
+      // let data = []
+      let data = chartData.channels.map((item) => chartData.t.indexOf(item.head_x));
       return data;
     },
     echartOptions({ showY, xAxisData, showPoint }) {
       let setData = (index) => {
-        if (!showY[index]) {
-          return new Array(xAxisData.length).fill(0)
-        }
-        let data = showY[index];
+        let data = showY[index].y;
         let _index = showPoint[index];
         data = [...data];
-        console.log(_index)
         data[_index] = {
           value: data[_index],
 
@@ -326,7 +288,6 @@ export default {
     point: {
       handler(val) {
         this.showPoint = val;
-        console.log(this.showPoint);
       },
       immediate: true,
     },
@@ -348,18 +309,18 @@ export default {
       let myEchart = echarts.init(this.$refs.echart);
       this.myEchart = myEchart;
       myEchart.setOption(this.echartOptions);
-
-      myEchart.on("click", (data) => {
-        console.log(data);
-        let componentIndex = data.componentIndex;
-        this.$set(this.showPoint, componentIndex, data.dataIndex);
-        // this.$emit("selectedComponent", componentIndex);
-        this.$emit("selectedComponent1", data); //大波浪
-      });
+      if (this.whatSize == 2) {
+        myEchart.on("click", (data) => {
+          let componentIndex = data.componentIndex;
+          this.$set(this.showPoint, componentIndex, data.dataIndex);
+          // this.$emit("selectedComponent", componentIndex);
+          this.$emit("selectedComponent1", data); //大波浪
+        });
+      }
     },
     xData() {
       let arr = [];
-      let min = this.chartData.datax[0], max = this.chartData.datax[this.chartData.datax.length-1];
+      let min = this.chartData.t[0], max = this.chartData.t[this.chartData.t.length-1];
       min = Math.floor(min);
       max = Math.ceil(max);
       for (let i = min; i < max; i++) {
@@ -382,9 +343,8 @@ export default {
 
 .content-top {
   width: 100%;
-  height: 100%;
   position: relative;
-  padding: 32px;
+  padding: 0 32px;
   margin-top: 128px;
 }
 

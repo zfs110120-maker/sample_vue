@@ -23,7 +23,7 @@
         />
       </div>
       <div class="info-con">
-          <eee v-if="defaultValue.length>0" class="eee" ref="eee" :sampleCount="sampleCount" :strengthMax="strengthMax" :timeRanges='timeRanges' @selectedUnit='selectedUnit'/>
+          <eee v-if="defaultValue" class="eee" ref="eee" :sampleCount="sampleCount" :strengthMax="strengthMax" :timeRanges='timeRanges' @selectedUnit='selectedUnit'/>
           <div class="fenxi">
             <span class="content">相 位 偏 移：</span>
             <div class="eee1">
@@ -38,22 +38,17 @@
       <div class="chart">
         <div class="text">柱状图</div>
         <div class="bar-con">
-          <ccc style="width:100%;height:100%;" :unit="unit" v-if="showData.DDatasendData.length>0 && DDshow" :chartData="showData.DDatasendData" :phaseShiftNum='phaseShiftNum'/>
+          <ccc v-if="Object.keys(showData.DDatasendData).length > 0 && DDshow" :unit="unit" :chartData="showData.DDatasendData" />
         </div>
       </div>
       <div class="chart">
         <div class="text">散点图</div>
-        <!-- <dv-border-box-8> -->
-          <bbb v-if="echartShow" :chartData="showData.scatterData" @clickNode='clickNode' :phaseShiftNum='phaseShiftNum'/>
-        <!-- </dv-border-box-8> -->
+        <bbb v-if="echartShow" :chartData="showData.scatterData" @clickNode='clickNode' />
       </div>
       <div class="chart" >
         <div class="text">波形图</div>
-        <!-- <el-button size="mini" type="primary" class="text1" :disabled="smallWaveform.length == 0" @click="goWave">信号波形</el-button> -->
         <img class="detail-icon" v-show="Object.keys(smallWaveform).length !== 0" @click="goWave" src="../../assets/image/menu/detail-icon.png" alt="" />
-        <!-- <dv-border-box-8> -->
-          <ddd :whatSize="1" v-if="Object.keys(smallWaveform).length !== 0" :chartData="smallWaveform"/>
-        <!-- </dv-border-box-8> -->
+        <ddd :whatSize="1" v-if="Object.keys(smallWaveform).length !== 0" :chartData="smallWaveform"/>
       </div>
     </div>
   </div>
@@ -62,12 +57,15 @@
 import aaa from "./homeinstall/a.vue";
 import bbb from "./homeinstall/b.vue";
 import ccc from "./homeinstall/c.vue";
+// import ccc from "./homeinstall/3d-bar.vue";
 import ddd from "./homeinstall/d.vue";
 import eee from "./homeinstall/e.vue";
 import {散点图数据, 通道数据, 柱状图数据, 波形图数据} from './homeinstall/data'
 import eleCalendar from 'ele-calendar'
 import 'ele-calendar/dist/vue-calendar.css'
-import { mapMutations, mapState} from "vuex";
+import { mapState } from "vuex";
+
+
 export default {
   components: {
     aaa,
@@ -86,7 +84,7 @@ export default {
       柱状图数据: Object.freeze(柱状图数据),
       波形图数据: Object.freeze(波形图数据),
       散点图选中的数据: [],
-      过滤后的散点图数据: [],
+      filterScatterData: [],
       datedef: [
         // {"date": "2021-11-30"},
         // {"date": "2021-11-25"},
@@ -97,10 +95,9 @@ export default {
       trendChartdata:{},    //通道数据
       scatterData:[],   //散点图数据
       smallWaveform: {},     //小波形
-      DDatasendData:[],   //3d柱状图数据
+      DDatasendData:{},   //3d柱状图数据
       sampleCount:0,
       strengthMax:0,
-      phaseShiftNum:0,
 	    echartShow:false,
       unit:'mV',
       DDshow:true,
@@ -126,65 +123,71 @@ export default {
     this.trendChartdata = {};    //通道数据
     this.scatterData = [];   //散点图数据
     this.smallWaveform = {};     //小波形
-    this.DDatasendData = [];   //3d柱状图数据
+    this.DDatasendData = {};   //3d柱状图数据
     this.sampleCount = 0;
     this.strengthMax = 0;
-    this.phaseShiftNum = 0;
     this.echartShow = false;
-    this.num = 0;
     this.unit = 'mV';
     this.finalSelectDate = [];
   },
   computed: {
-    ...mapState(['analyse']),
+    ...mapState(['dataSetid']),
+
     showData({trendChartdata, scatterData, DDatasendData, smallWaveform}) {
       let result = {trendChartdata, scatterData, DDatasendData, smallWaveform}
       if(this.unit != 'dBW') return result
       let fn = amp => 20 * Math.log10(0.2 * amp) - 80
       if(scatterData) {
-        console.log(scatterData)
-        result.scatterData = scatterData.map(item => ({...item, ypoint: fn(item.ypoint)}))
+        result.scatterData = scatterData.map(item => ({...item, y: fn(item.y)}))
       }
       if(DDatasendData) {
-        result.DDatasendData = DDatasendData.map(item => ({...item, zpoint: fn(item.zpoint)}))
+        const obj = {x:[],y:[],z:[]}
+        result.DDatasendData.z.forEach((item, index)=> {
+          obj.z[index] = fn(item)
+        })
+        obj.x = result.DDatasendData.x
+        obj.y = result.DDatasendData.y
+        result.DDatasendData = obj
       }
       return result
-    },
+    }
   },
   methods: {
-	  ...mapMutations(['SETCHECKID','SETCHECKOBJ','SETCOLER','SETANALYSE']),
     goWave(){
       this.$router.push({ path: "/homeList", query: {id: this.checkId} });
     },
     dataDaysend(){
-      this.$http.get(`/data/days?dbId=${this.sourceId}`).then(res=>{
-        const data = res.data
+      let dateList = []
+      if(this.dataSetid.length > 0){
+        dateList = this.dataSetid
+      }
+      else {
+        this.$http.get(`/data/days?dbId=${this.sourceId}`).then(res=>{
+          dateList = res.data
+        })
+      }
+      this.$nextTick(()=>{
         this.datedef = [];
-        data.forEach(item => {
+        dateList.forEach(item => {
           this.datedef.push({
             "date": item
           })
         });
         this.calendarShow = true;
-        this.defaultValue = data[0];
-        this.$nextTick(()=>{
-          this.dataDayconfirm(this.defaultValue);
-        })
+        this.defaultValue = dateList[0];
+        sessionStorage.setItem('toDay', this.defaultValue);
+        this.dataDayconfirm(this.defaultValue);
       })
     },
     changeNum(data){
-      if(data === 1){   //修改
-        this.DDatasend();
-        this.scatterDatasend();
-      }else{    //恢复
-        this.phaseShift = 0;
-        this.DDatasend();
-        this.scatterDatasend();
+      if(data === 2){
+        this.phaseShift = 0
       }
+      this.DDatasend(this.defaultValue);
+      this.scatterDatasend(this.defaultValue);
     },
     trendChartdatasend(toDay){   //趋势图数据
-      // this.$http.get(`/data/trend_charts?dbId=${this.sourceId}&day=${toDay}`).then(res=>{
-      this.$http.get(`/data/trend_charts?dbId=${this.sourceId}&day=2021-05-12`).then(res=>{
+      this.$http.get(`/data/trend_charts?dbId=${this.sourceId}&day=${this.defaultValue}`).then(res=>{
         const data = res.data
         this.trendChartdata = data.data;
         this.sampleCount = data.sampleCount;
@@ -204,73 +207,30 @@ export default {
       }
     },
 
-    /**
-     * 信息栏数据
-     */
-
-    infoColumn () {
-      this.startTime = this.dateChange(this.startTime)
-      this.endTime = this.dateChange(this.endTime)
-      console.log(this.startTime, this.endTime)
-      this.$http.post('/analysis/infoColumn', {
-        hallway: this.hallway,
-        startTime: this.startTime,
-        endTime: this.endTime,
-        phaseShift: this.phaseShift
-      }).then(res=>{
-        if(res.code === 200){
-          // this.scatterDatasend();
-          // this.trendChartdata = res.data.trendMap;
-          this.sampleCount = Number(res.data.infoColumn.points);  // 放电次数
-          this.strengthMax = Number(res.data.infoColumn.cmax);    // 最大值
-          // this.startTime = res.data.infoColumn.startTime;
-          // this.endTime = res.endTime;
-          // this.checkId = this.trendChartdata[0].id;
-          this.smallWaveform = {};
-          this.SETCOLER('rgba(255, 153, 0, 1)')
-          // this.DDatasend();
-          // this.scatterDatasend();
-        }
-      })
-    },
-
     xrangeChange(){   //拖动x两光标后范围变化
       this.DDatasend(this.defaultValue);
       this.scatterDatasend(this.defaultValue);
     },
 
     DDatasend(toDay){   //3D柱状图数据
-      this.$http.get(`/data/histogram?dbId=${this.sourceId}&startTime=${this.startTime}&endTime=${this.endTime}&channelId=${this.channelId}&phaseMove=${this.phaseShift}&day=2021-05-12`).then(res=>{
+      this.$http.get(`/data/histogram?dbId=${this.sourceId}&startTime=${sessionStorage.getItem('startTime')}&endTime=${sessionStorage.getItem('endTime')}&channelId=${sessionStorage.getItem('channelId') || 1}&phaseMove=${this.phaseShift}&day=${sessionStorage.getItem('toDay')}`).then(res=>{
         this.DDatasendData = res.data;
       })
     },
     scatterDatasend(toDay){   //散点图数据
-      this.$http.get(`/data/scatter_graph?dbId=${this.sourceId}&startTime=${this.startTime}&endTime=${this.endTime}&channelId=${this.channelId}&phaseMove=${this.phaseShift}&day=2021-05-12`).then(res=>{
+      this.$http.get(`/data/scatter_graph?dbId=${this.sourceId}&startTime=${sessionStorage.getItem('startTime')}&endTime=${sessionStorage.getItem('endTime')}&channelId=${sessionStorage.getItem('channelId') || 1}&phaseMove=${this.phaseShift}&day=${sessionStorage.getItem('toDay')}`).then(res=>{
         this.scatterData = res.data;
       })
     },
-    scatterPointinfsend(data){   //散点图点选数据
-      this.$http.post(`/analysis/scopedScatters`,{dbid:data}).then(res=>{
-        if(res.code === 200){
-          this.smallWavedatasend(data);
-        }
-      })
-    },
     smallWavedatasend(data){   //小波形图
-      this.$http.get(`/analysis/oscillogram/${data}`).then(res=>{
-        if(res.code === 200){
-          this.smallWaveform = res.data.wave;
-          console.log(this.smallWaveform)
-        }
+      this.$http.get(`/data/wave_graph?day=${this.defaultValue}&id=${data}&getInfo=false`).then(res=>{
+        this.smallWaveform = res.data;
       })
     },
     /** 散点图选择数据 */
     clickNode(data) {
-      console.log(data,'散点图选择数据')
       this.checkId = data.id
-      // this.scatterPointinfsend(data.dbid);
-      this.smallWavedatasend(data.dbid);
-      this.SETCHECKID(data.dbid)
+      this.smallWavedatasend(data.id);
     },
     renderContent(h, parmas) {
       // 自定义样式,我返回的是小点(橘黄色)
@@ -304,7 +264,6 @@ export default {
     datePick(date) {
       this.finalSelectDate = [];
       this.finalSelectDate.push(date);
-      this.defaultValue = date
       var d = new Date(date);
       let Year = d.getFullYear(),
       Month = d.getMonth()+1,
@@ -316,6 +275,8 @@ export default {
         Month = '0'+Month;
       }
       let toDay = Year+'-'+Month+'-'+day
+      this.defaultValue = toDay
+      sessionStorage.setItem('toDay', this.defaultValue);
       if(this.datedef.findIndex((item)=>item.date==toDay) == -1){
         this.$confirm(`${toDay}没有数据`, '提示', {
           type: 'warning',
@@ -326,7 +287,7 @@ export default {
         }).catch(() => {
         });
       }else{
-        this.dataDayconfirm(toDay);
+        this.dataDayconfirm();
       }
     },
     dataDayconfirm(toDay){
@@ -343,11 +304,11 @@ export default {
    },
 
     过滤散点图数据() {
-      this.过滤后的散点图数据 = this.散点图选中的数据
+      this.filterScatterData = this.散点图选中的数据
     },
     散点图框选(data) {
-      // this.散点图选中的数据 = Object.freeze(data)
-      // this.过滤散点图数据()
+      this.散点图选中的数据 = Object.freeze(data)
+      this.过滤散点图数据()
     },
     通道图框选(data) {
       this.smallWaveform = {};
@@ -359,7 +320,7 @@ export default {
     /** 选择通道的时候触发 */
     selectedComponent(index) {
       this.channelId = index + 1
-      this.num = 0;
+      sessionStorage.setItem('channelId', this.channelId)
       this.selectedUnit('mV');
       this.$refs.eee.yAxisUnit = 'mV';
       this.DDatasend(this.defaultValue);
@@ -367,8 +328,11 @@ export default {
     },
     /** 当框选的内容发生变化的时候触发 */
     brushselected(data, type) {
+      console.log(data);
       this.startTime = data[0]
       this.endTime = data[1]
+      sessionStorage.setItem('startTime', this.startTime);
+      sessionStorage.setItem('endTime', this.endTime);
       let map = {
         1: this.通道图框选,
         2: this.散点图框选
@@ -398,12 +362,12 @@ export default {
   width: 100%;
   height: 414px;
   display: flex;
+  border-bottom: solid 1px #ccc;
 }
 .bottom {
   width: 100%;
   height: 528px;
   display: flex;
-  border-top: 1px solid #ccc;
 }
 
 .bar-con {
@@ -444,13 +408,12 @@ export default {
   position: relative;
   background:#fff;
   border-right: 1px solid #CCCCCC;
+  border-left: 1px solid #CCCCCC;
 }
 .calendar-con {
   padding-right: 20px;
   width: 462px;
-  height: 100%;
-  border-right: 1px solid #CCCCCC;
-  border-bottom: 1px solid #CCCCCC;
+  height: 99%;
 }
 
 .el-picker-panel-calendar {
@@ -532,7 +495,7 @@ export default {
 }
 .calendar-con /deep/ .el-date-picker-calendar {
   width: 100%;
-  height: 101%;
+  height: 98%;
   border-radius: 10px;
   box-shadow: inherit;
 }

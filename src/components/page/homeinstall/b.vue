@@ -4,7 +4,7 @@
 
 <script>
 import * as echarts from "echarts";
-import { mapState, mapMutations} from "vuex";
+import { mapMutations} from "vuex";
 
 function debounce(callback = () => { }, wait = 200) {
   let timer = null;
@@ -21,7 +21,7 @@ export default {
   data() {
     return {
       myEchart: null,
-      过滤后的散点图数据: [],
+      filterScatterData: [],
       selectedList: [],
       dataId:[]
     };
@@ -30,22 +30,20 @@ export default {
     chartData: {
       type: Array,
       default: () => [],
-    },
-    phaseShiftNum: {
-      type: Number,
-      default: 0
     }
   },
   computed: {
-    // ...mapState(['color']),
-    xAxisData({ 过滤后的散点图数据 }) {
-      return 过滤后的散点图数据.map((item) => item.x);
+    xAxisData({ filterScatterData }) {
+      return filterScatterData.map((item) => item.x);
     },
-    yAxisData({ 过滤后的散点图数据 }) {
-      return 过滤后的散点图数据.map((item) => item.y);
+    colorData({ filterScatterData }) {
+      return filterScatterData.map((item) => item.c);
     },
-    showData({ 过滤后的散点图数据 }) {
-      return 过滤后的散点图数据.map((el) => [el.x, el.y]);
+    yAxisData({ filterScatterData }) {
+      return filterScatterData.map((item) => item.y);
+    },
+    showData({ filterScatterData }) {
+      return filterScatterData.map((el) => [el.x, el.y]);
     },
     echartOptions() {
       let _this = this;
@@ -62,7 +60,6 @@ export default {
               title: '滤波',
               icon: 'image://https://res.cdn.changbaimg.com/-/187f951aae87f2ff/de-interfere.png',
               onclick: data => {
-                // if (!this.selectedList.length) return
                 this.ilterInterferenceData();
                 this.scatterIdsend();
               }
@@ -86,7 +83,7 @@ export default {
                 this.selectedList.forEach(el => {
                   selectedIdMap[el.id] = true
                 })
-                this.过滤后的散点图数据 = this.chartData.filter(el => !selectedIdMap[el.id]);
+                this.filterScatterData = this.chartData.filter(el => !selectedIdMap[el.id]);
                 this.scatterIdsend();
               }
             },
@@ -96,7 +93,7 @@ export default {
               icon: 'image://https://res.cdn.changbaimg.com/-/057d97ff7f3bae8c/retain.png',
               onclick: data => {
                 if (!this.selectedList.length) return
-                if (this.selectedList.length) this.过滤后的散点图数据 = this.selectedList
+                if (this.selectedList.length) this.filterScatterData = this.selectedList
                 this.scatterIdsend();
               }
             },
@@ -105,7 +102,7 @@ export default {
               title: '重置',
               icon: 'image://https://res.cdn.changbaimg.com/-/f2f8588c4558278f/reset.png',
               onclick: () => {
-                this.过滤后的散点图数据 = this.chartData;
+                this.filterScatterData = this.chartData;
                 this.scatterIdsend();
               }
             },
@@ -114,19 +111,18 @@ export default {
               title: '查看全部数据',
               icon: 'image://https://res.cdn.changbaimg.com/-/6ef0fa5439a6250c/all.png',
               onclick: () => {
-                this.$router.push({ path: "/homeList", query: { sotId: '' }});
+                this.$router.push({ path: "/homeList" });
+                const scatterData = []
+                this.filterScatterData.forEach((item) => {
+                  scatterData.push(item.id)
+                })
+                this.SETSCATTERIDS(scatterData);
               }
             },
           },
           itemSize: 25,
           right: '5%'
         },
-        // tooltip: {
-        //   trigger: "axis",
-        //   axisPointer: {
-        //     type: "cross",
-        //   },
-        // },
         grid:{
           right: "35px",
         },
@@ -134,7 +130,6 @@ export default {
           {
             type: 'inside',
             xAxisIndex: [0],
-            // yAxisIndex: [0],
             start: 0,
             end: 100
           },
@@ -151,15 +146,8 @@ export default {
             scale: true,
             min:  0,
             max: 360,
-            splitNumber:5,
-            // show:false
-          },
-        // {
-        //   type: "category",
-        //   data:[0,90,180,270,360],
-        //   show:true,
-        //   position:'bottom'
-        // }
+            splitNumber:5
+          }
         ],
         yAxis: [
           {type: 'value'},
@@ -172,9 +160,16 @@ export default {
           {
             data: this.showData,
             type: "scatter",
-            symbolSize: 8,
+            large: true,
+						largeThreshold: 4000,
+						progressive: 100,
+            symbolSize: 4,
             yAxisIndex: 0,
-            color: '#3CB4E6',
+            itemStyle: {
+              color: (e) => {
+                return this.colorData[e.dataIndex]
+              }
+            },
             animationDurationUpdate: 'cubicOut'
           },
           {
@@ -182,6 +177,7 @@ export default {
             showSymbol: false,
             smooth: true,
             yAxisIndex: 1,
+            color: '#3CB4E6',
             data:_this.generateData(),
           },
         ],
@@ -200,15 +196,17 @@ export default {
     },
     chartData: {
       handler(val) {
-        this.过滤后的散点图数据 = JSON.parse(JSON.stringify(val))
+        this.filterScatterData = JSON.parse(JSON.stringify(val))
       },
       immediate: true
     }
   },
   methods: {
+    ...mapMutations(['SETSCATTERIDS']),
+
     // 过滤干扰数据
     ilterInterferenceData() {
-      this.过滤后的散点图数据 = this.过滤后的散点图数据.filter(el => el.id == 1)
+      this.filterScatterData = this.filterScatterData.filter(el => el.g == 1)
     },
     init() {
       let myEchart = echarts.init(this.$refs.echart);
@@ -217,13 +215,13 @@ export default {
 
       myEchart.on("click", (params) => {
         let dataIndex = params.dataIndex;
-        let node = this.过滤后的散点图数据[dataIndex];
+        let node = this.filterScatterData[dataIndex];
         this.$emit("clickNode", node);
       });
       let brushselected = debounce((params) => {
         try {
           let selectedList = params.batch[0].selected[0].dataIndex;
-          selectedList = this.过滤后的散点图数据.filter((item, index) =>
+          selectedList = this.filterScatterData.filter((item, index) =>
             selectedList.includes(index)
           );
           selectedList.length && this.$emit("brushselected", selectedList);
@@ -248,7 +246,7 @@ export default {
         }
       });
       this.dataId = []
-      this.过滤后的散点图数据.forEach(item=>{
+      this.filterScatterData.forEach(item=>{
         this.dataId.push(item.id);
       })
       // this.$http.post(`/api/dataAnalyse/scatterIdsend`,{dataId:JSON.stringify(this.dataId)}).then(res=>{

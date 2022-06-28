@@ -187,7 +187,7 @@ export default {
 }
 </script>
 <style scoped>
-   .pa_pager {
+  .pa_pager {
     position: relative;
     padding: 0px 7px 0px 7px;
     line-height: 30px;

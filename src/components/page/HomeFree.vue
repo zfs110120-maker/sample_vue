@@ -3,7 +3,7 @@
   <div class="homepreview">
     <div class="content_box">
       <div class="head-container">
-        <p>监测时长:<span class="time">{{ time.day }}天{{time.hour}}小时{{time.minute}}分{{time.s}}秒</span></p>
+        <p>监测时长:<span class="time">{{ time }}</span></p>
         <p class="word-style">放电次数: <span class="time">{{ sampleCount }}次</span></p>
         <div class="word-style">
           采集状态：<span :class="dbStatus === 1 ? 'avtive-word-style' : 'inactive-word-style'">{{ dbStatus === 1 ? '采集中' : '未采集' }}</span>
@@ -16,14 +16,14 @@
       <div class="middle-container">
         <div class="progress">
           <div class="location-con">
-            <div v-for="(item, index) in positionList" :key="'position' + index" @click="selectPosition(item)" :style="{ left: item.position / positionList[positionList.length - 1].position * 100 + '%'}">
+            <div :style="{ position: 'absolute', left: item.position / positionLength * 100 + '%'}" v-for="(item, index) in positionList" :key="'position' + index" @click="selectPosition(index)">
               <i class="iconfont newfontshandian" :style="{ color: item.color }"></i>
             </div>
           </div>
           <div class="progress-line"></div>
           <div class="sensor-container">
             <div v-for="(item, index) in collecStatusList" class="sensor-item" :class="index | leftStatus">
-              <div class="sensor-con" v-show="item.distance">
+              <div class="sensor-con" v-show="item.isShow">
                 <div class="circle" :class="index | classStatus"></div>
                 <img :src="item.img" class="sensor-img" alt="" />
                 <p class="sensor-name">{{ item.sensorName }}</p>
@@ -58,11 +58,11 @@
           </el-table-column>
           <el-table-column prop="sampleCount" label="放电次数" sortable>
           </el-table-column>
-          <el-table-column prop="strengthMax" label="放电强度最大值(mV)" sortable>
+          <el-table-column prop="strengthMax" label="放电强度最大值(mV)" width="250" sortable>
           </el-table-column>
           <el-table-column sortable label="占比">
             <template slot-scope="scope">
-              {{ scope.row.ratio * 100 }}%
+              {{ scope.row.ratio }}%
             </template>
           </el-table-column>
           <el-table-column prop="caption" label="位置">
@@ -118,39 +118,43 @@ export default {
         {
           img: require('../../assets/image/menu/sensor1.png'),
           sensorName: '',
-          distance: ''
+          distance: 0,
+          isShow: false
         },
         {
           img: require('../../assets/image/menu/sensor2.png'),
           sensorName: '',
-          distance: ''
+          distance: 0,
+          isShow: false
         },
         {
           img: require('../../assets/image/menu/sensor3.png'),
           sensorName: '',
-          distance: ''
+          distance: 0,
+          isShow: false
         },
         {
           img: require('../../assets/image/menu/sensor4.png'),
           sensorName: '',
-          distance: ''
+          distance: 0,
+          isShow: false
         }
       ],
       showGetDialog: false,
-      time:{},
+      time: '',
       multipleSelection: [],
       tableData: [
         // {id:1, locname: "内部0", position: 0.1, color: "red", ratio: 0.3, type: "内部", sampleCount: 300, strengthMax: 100, posiDescribe: "距左侧0.1m，右侧0.3m"},
         // {id:2, locname: "内部0", position: 0.5, color: "blue", ratio: 0.5, type: "内部", sampleCount: 300, strengthMax: 100, posiDescribe: "距左侧0.1m，右侧0.3m"},
       ],
       positionList:[],
-      timer: null,
       location: null,
       dbStatus: 0,
       sampleCount: 0,
       detect: null,
       dataIndex: null,
-      myPieChart: null
+      myPieChart: null,
+      positionLength: 0
     }
   },
   computed: {
@@ -164,18 +168,17 @@ export default {
     if(this.collection || sessionStorage.getItem('model') == 'true') {
       this.dbStatus = 1
       this.detect = setInterval(() => {
-        this.stateInfsend();
-        this.locationgRessend();
+        this.locationgRessend(this.isChoseDb);
       }, 1000)
     }
   },
   watch: {
     isChoseDb(value) {
-      this.refresh();
+      this.refresh(value);
     }
   },
   methods:{
-    ...mapMutations(['SETANALYSE','SETCHECKID','SETCHECKOBJ', 'SETCOLLECTION']),
+    ...mapMutations(['SETCOLLECTION', 'SETDATASETDATE']),
 
     handlePubChange() {
       if (this.dbStatus) {
@@ -197,72 +200,69 @@ export default {
     },
     collect(data) {
       if (data) {
-        this.timer = setInterval(() => {
-          this.stateInfsend();
-        }, 1000);
-
         this.location = setInterval(() => {
-          this.locationgRessend();
-        }, 5000)
+          this.locationgRessend(this.isChoseDb);
+        }, 1000)
       }
     },
-    refresh(){
-      this.stateInfsend();
-      this.locationgRessend();
-      this.getSensors();
-    },
-    stateInfsend(){   //时间展示
-      this.$http.get('/location/getTime').then(res=>{
-        if(res.code === 200){
-          this.time = res.data
-        }
-      })
-    },
-
-    getSensors(){
-      this.$http.get('/location/distanceAndName').then(res=>{
-        if (res.code === 200){
-          this.collecStatusList[0].sensorName = res.data.sensor && res.data.sensor.head1
-          this.collecStatusList[1].sensorName = res.data.sensor && res.data.sensor.head2
-          this.collecStatusList[2].sensorName = res.data.sensor && res.data.sensor.head3
-          this.collecStatusList[3].sensorName = res.data.sensor && res.data.sensor.head4
-          this.collecStatusList[0].distance = res.data.sensor && res.data.sensor.g1
-          this.collecStatusList[1].distance = res.data.sensor && res.data.sensor.g2
-          this.collecStatusList[2].distance = res.data.sensor && res.data.sensor.g3
-        }
-      })
+    refresh(value){
+      this.locationgRessend(value);
     },
 
     /**
      * 获取基本信息
      */
-    locationgRessend(){
-      this.$http.get(`/location/locationRessend`).then(res=>{
-        if(res.code === 200){
-			    this.positionList = [];
-          this.tableData = res.data.locationList
-          this.tableData.forEach(item => {
-            this.sampleCount += Number(item.sampleCount)
-            if(item.color != 'None'){
-              this.positionList.push({ id:item.id, color:item.color, position: item.displayLocation });
-            };
-            this.$nextTick(()=>{
-              this.$refs.multipleTableDevice.toggleRowSelection(item);
-            })
-          })
-          this.positionList.forEach(item=>{
-            if (item.position < 0 || item.position > this.positionList[this.positionList.length - 1].position) {
-              item.position = 0
-            }
-          })
-          this.getPie();
+    locationgRessend(value){
+      this.$http.get(`db/${value}/stat `).then(res=>{
+        this.positionList = [];
+        this.sampleCount = 0
+        this.positionLength = 0
+        const data = res.data;
+        this.tableData = data.locationList
+        this.time = data.monitorDuration
+        this.collecStatusList[0].sensorName = data.baseInfo.title1
+        this.collecStatusList[1].sensorName = data.baseInfo.title2
+        this.collecStatusList[2].sensorName = data.baseInfo.title3
+        this.collecStatusList[3].sensorName = data.baseInfo.title4
+        this.collecStatusList[0].distance = data.baseInfo.space12 || 0
+        this.collecStatusList[1].distance = data.baseInfo.space23 || 0
+        this.collecStatusList[2].distance = data.baseInfo.space34 || 0
+        if (this.collecStatusList[0].distance) {
+          this.collecStatusList[0].isShow = true
+          this.collecStatusList[1].isShow = true
         }
+
+        if (this.collecStatusList[1].distance) {
+          this.collecStatusList[2].isShow = true
+        }
+
+        if (this.collecStatusList[2].distance) {
+          this.collecStatusList[3].isShow = true
+        }
+
+        this.tableData.forEach(item => {
+          this.sampleCount += Number(item.sampleCount)
+          if(item.color){
+            this.positionList.push({ id:item.id, color:item.color, position: item.displayLocation });
+          };
+          this.$nextTick(()=>{
+            this.$refs.multipleTableDevice.toggleRowSelection(item);
+          })
+        })
+        this.positionList.forEach(item=>{
+          if (item.position < 0) {
+            item.position = 0
+          }
+          console.log(item.position)
+          this.positionLength += Number(item.position)
+        })
+        console.log(this.positionLength);
+        this.getPie();
       })
     },
     stopDetect(type) {
       this.$http.post('/sample/stop').then(res=>{
         clearInterval(this.detect);
-        clearInterval(this.timer);
         clearInterval(this.location);
         this.SETCOLLECTION(false);
         sessionStorage.setItem('model', false);
@@ -272,8 +272,6 @@ export default {
       })
     },
     analyseDS(){  //确认分析
-      console.log(this.collection)
-      console.log(sessionStorage.getItem('model'))
       if (this.collection || sessionStorage.getItem('model') == 'true') {
         this.$confirm("是否关闭采集", '提示', {
           type: 'warning',
@@ -286,39 +284,38 @@ export default {
         });
         return;
       }
-      // if(this.multipleSelection.length === 0){
-      //   this.$confirm("请至少选择一条数据进行分析", '提示', {
-      //     type: 'warning',
-      //     customClass: "errormessage",
-      //     showCancelButton: false,
-      //     center: "true"
-      //   }).then(() => {
-      //   }).catch(() => {
-      //   });
-      //   return;
-      // }
+      if(this.multipleSelection.length === 0){
+        this.$confirm("请至少选择一条数据进行分析", '提示', {
+          type: 'warning',
+          customClass: "errormessage",
+          showCancelButton: false,
+          center: "true"
+        }).then(() => {
+        }).catch(() => {
+        });
+        return;
+      }
 
       this.$router.push("/homeinstall");
 
       let dataSetid = []
       this.multipleSelection.forEach(item=>{
-        dataSetid.push(item.id)
+        dataSetid.push(item.dayList[0])
       })
-
-      this.$http.post(`/location/startAnalysis`, dataSetid).then(res=>{
-        if(res.code === 200){
-          this.SETCHECKID("");
-          this.SETCHECKOBJ({});
-          this.$router.push("/homeinstall");
-          this.SETANALYSE(2);
-        }
-      })
+      console.log(dataSetid);
+      this.SETDATASETDATE(dataSetid);
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
-    selectPosition(item) {
-      console.log(item);
+    selectPosition(index) {
+      console.log(index)
+      this.myPieChart.dispatchAction({
+        type: 'highlight',
+        seriesIndex: 0,
+        dataIndex: index
+      })
+      this.$refs.multipleTableDevice.setCurrentRow(this.$refs.multipleTableDevice.data[index]);
     },
     getPie(){
       let echart = ""
@@ -379,7 +376,6 @@ export default {
     rowClick(row, column, event) {
       this.tableData.forEach((item, index) => {
         if (item.id === row.id) {
-          console.log(index)
           this.myPieChart.dispatchAction({
             type: 'highlight',
             seriesIndex: 0,
@@ -461,6 +457,8 @@ export default {
 
 .location-con {
   display: flex;
+  position: relative;
+  top: -40px;
 }
 
 .progress-line {
@@ -539,6 +537,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 60px;
 }
 
 .distance {

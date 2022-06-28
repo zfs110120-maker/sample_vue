@@ -1,11 +1,10 @@
 <template>
-  <div ref="echart" class="echart"></div>
+  <div ref="echart" id="chartholder" class="echart"></div>
 </template>
 
 <script>
 import * as d3 from "d3";
-import * as d3X3d from "d3-x3d";
-
+import * as x3d from "d3-x3d";
 
 export default {
   data() {
@@ -20,46 +19,41 @@ export default {
   },
   props: {
     chartData: {
-      type: Array,
-      default: () => [],
-    },
-    phaseShiftNum: {
-      type: Number,
-      default: 0
+      type: Object,
+      default: () => {},
     },
     unit:{
       type: String,
     }
   },
   computed: {
-    showData({ chartData }) {
-      let list = []
-      // chartData = chartData[0]
-      let { xdata, ydata, zdata } = chartData
-      let num = 0
-      if(this.unit === 'mV'){
-        num = 0
-      }else{
-        num = 80
-      }
-      chartData.forEach((item, index) => {
-        list.push([item.xpoint, item.ypoint, item.zpoint + num])
-      })
-      // for (let i = 0; i < xdata.length; i++) {
-      //   list.push([xdata[i], ydata[i], zdata[i]+num])
-      // }
-      if(this.unit != 'mV'){
-        list.unshift([0, 0, 70])
-      }
-      return list
-    },
+    // showData({ chartData }) {
+    //   let list = []
+    //   // chartData = chartData[0]
+    //   let { xdata, ydata, zdata } = chartData
+    //   let num = 0
+    //   if(this.unit === 'mV'){
+    //     num = 0
+    //   }else{
+    //     num = 80
+    //   }
+    //   chartData.forEach((item, index) => {
+    //     list.push([item.xpoint, item.ypoint, item.zpoint + num])
+    //   })
+    //   // for (let i = 0; i < xdata.length; i++) {
+    //   //   list.push([xdata[i], ydata[i], zdata[i]+num])
+    //   // }
+    //   if(this.unit != 'mV'){
+    //     list.unshift([0, 0, 70])
+    //   }
+    //   return list
+    // },
     echartOptions() {
-
     },
   },
   watch: {
     echartOptions(val) {
-      this.myChart.setOption(val, true);
+      // this.myChart.setOption(val, true);
     },
     "unit":{
       handler(){
@@ -73,15 +67,6 @@ export default {
   },
   mounted() {
     this.init();
-    let data = []
-    this.chartData.forEach((item, index) => {
-      data.push(item.xpoint)
-    })
-    // let data = this.chartData[0].xdata;
-    if(data.length>0){
-      this.sum = data[data.length-1]
-      this.循环前进();
-    }
   },
   methods: {
     循环前进() {
@@ -95,10 +80,53 @@ export default {
       });
     },
     init() {
-      let myChart = echarts.init(this.$refs.echart);
-      this.myChart = myChart;
-      var option = this.echartOptions;
-      this.myChart.setOption(option);
+      var width = 500;
+      var height = 500;
+
+      // Generate some data
+      var data = [
+        {
+          key: "UK",
+          values: [
+            { key: "Apples", value: 9 },
+            { key: "Oranges", value: 3 },
+            { key: "Pears", value: 5 },
+            { key: "Bananas", value: 7 }
+          ]
+        },
+        {
+          key: "France",
+          values: [
+            { key: "Apples", value: 5 },
+            { key: "Oranges", value: 4 },
+            { key: "Pears", value: 6 },
+            { key: "Bananas", value: 2 }
+          ]
+        }
+      ];
+      console.log(data)
+
+      // Declare the bar chart component
+      var viewpoint = x3d.default.component.viewpoint();
+      var component = x3d.default.chart.barChartMultiSeries();
+
+      // Create scene
+      var scene = d3.select("#chartholder")
+        .append("X3D")
+        .attr("id", "axis")
+        .attr("width", width + "px")
+        .attr("height", height + "px")
+        .append("Scene");
+
+      scene.call(viewpoint);
+
+      console.log(scene)
+
+      // scene.append("Group").call(axis);
+
+      var chart = scene.append("Group")
+        .attr("class", "chart");
+      chart.datum(data).call(component);
     },
   },
 };
@@ -106,6 +134,7 @@ export default {
 
 <style scoped>
 .echart {
-  height: 100%;
+  height: 400px;
+  width: 400px;
 }
 </style>

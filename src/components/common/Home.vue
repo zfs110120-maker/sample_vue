@@ -56,6 +56,11 @@ export default {
       ]
     }
   },
+  mounted() {
+    if (sessionStorage.getItem('tabActive')) {
+      this.tabActive = sessionStorage.getItem('tabActive')
+    }
+  },
   methods:{
     goOut(){
       this.$confirm("确定退出当前登录吗？", '提示', {
@@ -72,6 +77,9 @@ export default {
           localStorage.removeItem('token');
           sessionStorage.setItem('samplingDbId', "")
           sessionStorage.setItem('choseDbId', "")
+          sessionStorage.setItem('startTime', '')
+          sessionStorage.setItem('endTime', '')
+          sessionStorage.setItem('channelId', '')
           this.$router.push("/login")
         })
       }).catch(() => {
@@ -99,6 +107,7 @@ export default {
     '$route':{
       handler(){
         this.tabActive = this.$route.path;
+        sessionStorage.setItem('tabActive', this.$route.path);
       }
     }
   }
