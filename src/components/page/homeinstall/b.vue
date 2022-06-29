@@ -196,7 +196,7 @@ export default {
     },
     chartData: {
       handler(val) {
-        this.filterScatterData = JSON.parse(JSON.stringify(val))
+        this.filterScatterData = val
       },
       immediate: true
     }
@@ -249,9 +249,6 @@ export default {
       this.filterScatterData.forEach(item=>{
         this.dataId.push(item.id);
       })
-      // this.$http.post(`/api/dataAnalyse/scatterIdsend`,{dataId:JSON.stringify(this.dataId)}).then(res=>{
-      //   this.selectedList = [];
-      // })
     },
     func(x){
       x/=100;

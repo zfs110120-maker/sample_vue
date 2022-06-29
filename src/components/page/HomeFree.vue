@@ -17,7 +17,7 @@
         <div class="progress">
           <div class="location-con">
             <div :style="{ position: 'absolute', left: item.position / positionLength * 100 + '%'}" v-for="(item, index) in positionList" :key="'position' + index" @click="selectPosition(index)">
-              <i class="iconfont newfontshandian" :style="{ color: item.color }"></i>
+              <i class="iconfont newfontshandian" :class="item.big && 'big-size'" :style="{ color: item.color }"></i>
             </div>
           </div>
           <div class="progress-line"></div>
@@ -243,7 +243,7 @@ export default {
         this.tableData.forEach(item => {
           this.sampleCount += Number(item.sampleCount)
           if(item.color){
-            this.positionList.push({ id:item.id, color:item.color, position: item.displayLocation });
+            this.positionList.push({ id:item.id, color:item.color, position: item.displayLocation, big: false });
           };
           this.$nextTick(()=>{
             this.$refs.multipleTableDevice.toggleRowSelection(item);
@@ -253,10 +253,8 @@ export default {
           if (item.position < 0) {
             item.position = 0
           }
-          console.log(item.position)
           this.positionLength += Number(item.position)
         })
-        console.log(this.positionLength);
         this.getPie();
       })
     },
@@ -302,20 +300,27 @@ export default {
       this.multipleSelection.forEach(item=>{
         dataSetid.push(item.dayList[0])
       })
-      console.log(dataSetid);
       this.SETDATASETDATE(dataSetid);
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
-    selectPosition(index) {
-      console.log(index)
+    selectPosition(num) {
       this.myPieChart.dispatchAction({
         type: 'highlight',
         seriesIndex: 0,
-        dataIndex: index
+        dataIndex: num
       })
-      this.$refs.multipleTableDevice.setCurrentRow(this.$refs.multipleTableDevice.data[index]);
+      for(let i = 0; i < this.tableData.length - 1; i++) {
+        if (i !== num) {
+          this.myPieChart.dispatchAction({
+            type: 'downplay',
+            seriesIndex: 0,
+            dataIndex: i
+          })
+        }
+      }
+      this.$refs.multipleTableDevice.setCurrentRow(this.$refs.multipleTableDevice.data[num]);
     },
     getPie(){
       let echart = ""
@@ -368,6 +373,12 @@ export default {
       option && this.myPieChart.setOption(option, true);
       this.myPieChart.on("click", params => {
         this.$refs.multipleTableDevice.setCurrentRow(this.$refs.multipleTableDevice.data[params.dataIndex]);
+        this.positionList[params.dataIndex].big = true;
+        for(let i = 0; i < this.tableData.length - 1; i++) {
+          if (i != params.dataIndex) {
+            this.positionList[i].big = false;
+          }
+        }
       });
     },
     setCurrentRow() {
@@ -381,13 +392,15 @@ export default {
             seriesIndex: 0,
             dataIndex: index
           })
+          this.positionList[index].big = true
         }
         else {
-           this.myPieChart.dispatchAction({
+          this.myPieChart.dispatchAction({
             type: 'downplay',
             seriesIndex: 0,
             dataIndex: index
           })
+          this.positionList[index].big = false
         }
       })
     },
@@ -458,7 +471,11 @@ export default {
 .location-con {
   display: flex;
   position: relative;
-  top: -40px;
+  top: -50px;
+}
+
+.big-size::before {
+  font-size: 36px !important;
 }
 
 .progress-line {
