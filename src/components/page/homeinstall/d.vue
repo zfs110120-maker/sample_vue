@@ -65,7 +65,8 @@ export default {
           formatter: ""
         };
       };
-      let name1 = "";
+      let name1 = this.whatSize == 2 ? 'ns' : '';
+      let yname = this.whatSize == 2 ? 'mV' : '';
       let isShow = false;
       //小波形
       this.tooltip = {
@@ -100,7 +101,6 @@ export default {
         {left:"60px",right:"40px", top: "14%", height: "81%" },
         {left:"60px",right:"40px", top: "95%", height: "1%" },
       ];
-      name1 = "";
       isShow = true
 
       let options = {
@@ -157,7 +157,6 @@ export default {
             },
           },
           {
-            // data: this.xData(),
             data:xAxisData,
             gridIndex: 4,
             name: name1,
@@ -179,6 +178,7 @@ export default {
           {
             gridIndex: 0,
             splitNumber: 3,
+            name: yname,
             axisLine: this.axisLine,
             axisLabel: this.axisLabel,
           },
@@ -220,6 +220,7 @@ export default {
             yAxisIndex: 0,
             xAxisIndex: 0,
             itemStyle: {
+              // 黄色
               color: "rgb(255,153,0)",
             },
             symbolSize: (data, item) => {
@@ -234,7 +235,8 @@ export default {
             yAxisIndex: 1,
             xAxisIndex: 1,
             itemStyle: {
-              color: "rgb(0,255,0)",
+              // 蓝色
+              color: "rgb(0,0,255)",
             },
             symbolSize: (data, item) => {
               let index = item.dataIndex;
@@ -248,7 +250,8 @@ export default {
             yAxisIndex: 2,
             xAxisIndex: 2,
             itemStyle: {
-              color: "rgb(0,0,255)",
+              // 红色
+              color: "#ea5757",
             },
             symbolSize: (data, item) => {
               let index = item.dataIndex;
@@ -262,7 +265,8 @@ export default {
             yAxisIndex: 3,
             xAxisIndex: 3,
             itemStyle: {
-              color: "rgb(255,0,0)",
+              // 绿色
+              color: "rgb(0,255,0)",
             },
             symbolSize: (data, item) => {
               let index = item.dataIndex;

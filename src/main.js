@@ -1,22 +1,23 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
+import './assets/icon/iconfont.css'
 import App from './App'
 import router from './router'
 import Router from 'vue-router'
 import raphael from 'raphael'
 import store from "./store/index"
 import dataV from '@jiaminghi/data-view'
+import { Loading, Message, MessageBox } from "element-ui"
 
 Vue.use(dataV)
 
-import './assets/icon/iconfont.css'
 
 // 引入easy-ui
 import 'vx-easyui/dist/themes/default/easyui.css';
 import 'vx-easyui/dist/themes/icon.css';
 import 'vx-easyui/dist/themes/vue.css';
-import locale from 'vx-easyui/dist/locale/easyui-lang-zh_CN.js'; 
+import locale from 'vx-easyui/dist/locale/easyui-lang-zh_CN.js';
 import EasyUI from 'vx-easyui';
 Vue.use(EasyUI,{locale: locale});
 
@@ -50,19 +51,17 @@ import VueCron from 'vue-cron'
 Vue.use(VueCron);
 Vue.config.productionTip = false
 
-// axios.interceptors.request.use(function (config) {
-//   if(config.data){
-//     var token = localStorage.getItem('token')
-//     if(token) {
-//       config.headers.Authorization = token;
-//     } else {
-//       router.push("/login")
-//     }
-//   }
-//   return config;
-// }, function (error) {
-//   return Promise.reject(error);
-// });
+axios.interceptors.request.use(function (config) {
+  var token = localStorage.getItem('token')
+  if(token) {
+    config.headers['token'] = token;
+  } else {
+    router.push("/login")
+  }
+  return config;
+}, function (error) {
+  return Promise.reject(error);
+});
 
 // Add a response interceptor
 axios.interceptors.response.use(response => {
@@ -70,7 +69,7 @@ axios.interceptors.response.use(response => {
   if (response.status === 200) {
     return Promise.resolve(response);
   } else {
-      return Promise.reject(response);
+    return Promise.reject(response);
   }
 },
 error => {
@@ -90,11 +89,11 @@ error => {
           // 清除本地token和清空vuex中token对象
           // 跳转登录页面
           case 403:
-              // Toast({
-              //     message: '登录过期，请重新登录',
-              //     duration: 1000,
-              //     forbidClick: true
-              // });
+              Message({
+                message: '登录过期，请重新登录',
+                type: 'error',
+                duration: 5 * 1000
+              })
               // 清除token
               localStorage.removeItem('token');
               // 跳转登录页面，并将要浏览的页面fullPath传过去，登录成功后跳转需要访问的页面
@@ -110,19 +109,19 @@ error => {
 
           // 404请求不存在
           case 404:
-            // this.$notify({
-            //   message: '网络请求不存在',
-            //   type: 'error',
-            //   position: 'bottom-right'
-            // });
+            Message({
+              message: '网络请求不存在',
+              type: 'error',
+              duration: 5 * 1000
+            })
             break;
           // 其他错误，直接抛出错误提示
           default:
-            // this.$notify({
-            //   message: error.response.data.message,
-            //   type: 'error',
-            //   position: 'bottom-right'
-            // });
+            Message({
+              message: error.response.data.message,
+              type: 'error',
+              duration: 5 * 1000
+            })
       }
       return Promise.reject(error.response);
   }

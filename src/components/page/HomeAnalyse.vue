@@ -36,13 +36,13 @@
     </div>
     <div class="bottom">
       <div class="chart">
-        <div class="text">柱状图</div>
+        <div class="text">PRPS图谱</div>
         <div class="bar-con">
           <ccc v-if="Object.keys(showData.DDatasendData).length > 0 && DDshow" :unit="unit" :chartData="showData.DDatasendData" />
         </div>
       </div>
       <div class="chart">
-        <div class="text">散点图</div>
+        <div class="text">PRPD图谱</div>
         <bbb v-if="echartShow" :chartData="showData.scatterData" @clickNode='clickNode' />
       </div>
       <div class="chart" >
@@ -160,24 +160,47 @@ export default {
       let dateList = []
       if(this.dataSetid.length > 0){
         dateList = this.dataSetid
+
+        this.$nextTick(()=>{
+          this.datedef = [];
+          dateList.forEach(item => {
+            this.datedef.push({
+              "date": item
+            })
+          });
+          this.calendarShow = true;
+          if (sessionStorage.getItem("toDay")) {
+            this.defaultValue = sessionStorage.getItem("toDay")
+          }
+          else {
+            this.defaultValue = dateList[0];
+          }
+          sessionStorage.setItem('toDay', this.defaultValue);
+          this.dataDayconfirm(this.defaultValue);
+        })
       }
       else {
         this.$http.get(`/data/days?dbId=${this.sourceId}`).then(res=>{
           dateList = res.data
+          this.$nextTick(()=>{
+            this.datedef = [];
+            dateList.forEach(item => {
+              this.datedef.push({
+                "date": item
+              })
+            });
+            this.calendarShow = true;
+            if (sessionStorage.getItem("toDay")) {
+              this.defaultValue = sessionStorage.getItem("toDay")
+            }
+            else {
+              this.defaultValue = dateList[0];
+            }
+            sessionStorage.setItem('toDay', this.defaultValue);
+            this.dataDayconfirm(this.defaultValue);
+          })
         })
       }
-      this.$nextTick(()=>{
-        this.datedef = [];
-        dateList.forEach(item => {
-          this.datedef.push({
-            "date": item
-          })
-        });
-        this.calendarShow = true;
-        this.defaultValue = dateList[0];
-        sessionStorage.setItem('toDay', this.defaultValue);
-        this.dataDayconfirm(this.defaultValue);
-      })
     },
     changeNum(data){
       if(data === 2){
@@ -364,10 +387,12 @@ export default {
   display: flex;
   border-bottom: solid 1px #ccc;
 }
+
 .bottom {
   width: 100%;
-  height: 528px;
+  height: 570px;
   display: flex;
+  justify-content: space-between;
 }
 
 .bar-con {
@@ -383,8 +408,8 @@ export default {
 }
 
 .chart {
-  width: 618px;
-  height: 528px;
+  width: 100%;
+  height: 570px;
   position: relative;
   background: #fff;
   border-right: 1px solid #ccc;

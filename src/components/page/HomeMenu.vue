@@ -94,16 +94,21 @@ export default {
     }
     if(this.collection || sessionStorage.getItem('model') === 'true') {
       this.isShowLeft = false;
-      this.$refs.dataConfigTree.setCurrentKey(sessionStorage.getItem('samplingDbId'));
+      this.$refs.dataConfigTree.setCurrentKey(Number(sessionStorage.getItem('samplingDbId')));
       this.sourceId = sessionStorage.getItem('samplingDbId');
       this.choseDb(sessionStorage.getItem('samplingDbId'));
     }
   },
   mounted(){
     this.getAskFilelist();
+    // 数据表的id
     if (sessionStorage.getItem('choseDbId')) {
-      this.$refs.dataConfigTree.setCurrentKey(sessionStorage.getItem('choseDbId'));
-      this.choseDb(sessionStorage.getItem('choseDbId'));
+      // 数据表的sourceid
+      this.sourceId = Number(sessionStorage.getItem('sourceId'))
+      this.$nextTick(() => {
+        this.$refs.dataConfigTree.setCurrentKey(Number(sessionStorage.getItem('choseDbId')));
+      })
+      this.choseDb(Number(sessionStorage.getItem('choseDbId')));
     }
   },
   methods: {
@@ -204,17 +209,17 @@ export default {
         });
         return;
       }
-      if(this.parentId === 0){
-        this.$confirm("根目录不能删除", '提示', {
-          type: 'warning',
-          customClass: "errormessage",
-          showCancelButton: false,
-          center: "true"
-        }).then(() => {
-        }).catch(() => {
-        });
-        return;
-      }
+      // if(this.parentId === 0){
+      //   this.$confirm("根目录不能删除", '提示', {
+      //     type: 'warning',
+      //     customClass: "errormessage",
+      //     showCancelButton: false,
+      //     center: "true"
+      //   }).then(() => {
+      //   }).catch(() => {
+      //   });
+      //   return;
+      // }
       this.$confirm("确定删除当前数据吗？", '提示', {
         type: 'warning',
         customClass: "errormessage",

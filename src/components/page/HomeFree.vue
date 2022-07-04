@@ -213,6 +213,9 @@ export default {
      * 获取基本信息
      */
     locationgRessend(value){
+      if (!value) {
+        return;
+      }
       this.$http.get(`db/${value}/stat `).then(res=>{
         this.positionList = [];
         this.sampleCount = 0
@@ -282,17 +285,17 @@ export default {
         });
         return;
       }
-      if(this.multipleSelection.length === 0){
-        this.$confirm("请至少选择一条数据进行分析", '提示', {
-          type: 'warning',
-          customClass: "errormessage",
-          showCancelButton: false,
-          center: "true"
-        }).then(() => {
-        }).catch(() => {
-        });
-        return;
-      }
+      // if(this.multipleSelection.length === 0){
+      //   this.$confirm("请至少选择一条数据进行分析", '提示', {
+      //     type: 'warning',
+      //     customClass: "errormessage",
+      //     showCancelButton: false,
+      //     center: "true"
+      //   }).then(() => {
+      //   }).catch(() => {
+      //   });
+      //   return;
+      // }
 
       this.$router.push("/homeinstall");
 

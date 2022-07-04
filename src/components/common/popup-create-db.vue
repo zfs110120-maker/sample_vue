@@ -71,7 +71,7 @@
 
       <div class="btn-group">
         <button class="cancle-btn" type="button" @click="clickClose">取消</button>
-        <button class="submit-btn" type="button" @click="confirmBtn">确认分析</button>
+        <button class="submit-btn" type="button" @click="confirmBtn">确认</button>
       </div>
     </div>
   </div>
@@ -293,6 +293,9 @@ export default {
       })
     },
     editDb(value) {
+      if (!value) {
+        return;
+      }
       this.$http.get(`/db/${value}`).then(res=>{
         this.form = res.data
         if (this.form) {

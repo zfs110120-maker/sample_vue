@@ -39,6 +39,7 @@ export default {
             {
                 type: 'value',
                 // 让表格的刻度向靠里侧显示
+                name: 'mV',
                 axisTick: {
                   show: true,
                   inside: true,
@@ -50,7 +51,7 @@ export default {
                 axisLine: {
                 show: true,
                   lineStyle: {
-                      color: 'red',
+                      color: 'rgb(255,153,0)',
                       width: 3,
                   },
                 },
@@ -64,6 +65,7 @@ export default {
             },
             {
                 type: 'value',
+                name: 'mV',
                 axisTick: {
                   show: true,
                   inside: false,
@@ -71,7 +73,7 @@ export default {
                 axisLine: {
                   show: true,
                   lineStyle: {
-                    color: 'orange',
+                    color: 'rgb(0,0,255)',
                     width: 3,
                   },
                 },
@@ -82,6 +84,7 @@ export default {
             },
             {
                 type: 'value',
+                name: 'mV',
                 axisTick: {
                 show: true,
                 inside: true,
@@ -92,7 +95,7 @@ export default {
                 axisLine: {
                   show: true,
                   lineStyle: {
-                    color: 'green',
+                    color: '#ea5757',
                     width: 3,
                   },
                 },
@@ -102,18 +105,19 @@ export default {
             },
             {
                 type: 'value',
+                name: 'mV',
                 axisTick: {
                 show: true,
                 inside: true,
                 },
-                offset: 70,
+                offset: 60,
                 axisLabel: {
                   inside: true,
                 },
                 axisLine: {
                   show: true,
                   lineStyle: {
-                    color: 'blue',
+                    color: 'rgb(0,255,0)',
                     width: 3,
                   }
                 },
@@ -123,7 +127,7 @@ export default {
             }
         ],
         xAxis: {
-            name: '',
+            name: 'ns',
             data: xAxisData,
             // boundaryGap: false, //x下标在刻度处显示
             splitLine: {
@@ -206,11 +210,7 @@ export default {
                 },
             },
         },
-        legend: {
-            // 调整图样文字
-            data: ['通道1', '通道2', '通道3', '通道4'],
-        },
-        color: ['red', 'orange', 'green', 'blue']
+        color: ['rgb(255,153,0)', 'rgb(0,0,255)', '#ea5757', 'rgb(0,255,0)']
       };
       return option;
     },

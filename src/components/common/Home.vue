@@ -70,9 +70,7 @@ export default {
         center: "true"
       }).then(() => {
         console.log(localStorage.getItem('token'));
-        this.$http.post('/admin/logout', {} ,{
-          headers: {'token': localStorage.getItem('token') }
-        }).then(res=>{
+        this.$http.post('/admin/logout').then(res=>{
           sessionStorage.setItem('username',"");
           localStorage.removeItem('token');
           sessionStorage.setItem('samplingDbId', "")

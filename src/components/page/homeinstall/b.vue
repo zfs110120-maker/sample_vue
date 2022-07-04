@@ -124,7 +124,7 @@ export default {
           right: '5%'
         },
         grid:{
-          right: "35px",
+          right: "15px",
         },
         dataZoom: [
           {
@@ -146,7 +146,7 @@ export default {
             scale: true,
             min:  0,
             max: 360,
-            splitNumber:5
+            splitNumber: 5
           }
         ],
         yAxis: [
@@ -258,7 +258,7 @@ export default {
       let data = [];
       let dig=Math.PI/180;
       let y = 0
-      for (let x = 0; x < 360; x ++) {
+      for (let x = 0; x < 360; x++) {
         y=800*Math.sin(x*dig)+900;
         data.push([x,y])
       }

@@ -42,9 +42,9 @@ export default {
       const setColor = index => {
         let colorMap = {
           0: `rgba(255, 153, 0, ${index === selectedSeriesIndex ? 1 : 0.4})`,
-          1: `rgba(0,255,0, ${index === selectedSeriesIndex ? 1 : 0.4})`,
-          2: `rgba(0,0,255, ${index === selectedSeriesIndex ? 1 : 0.4})`,
-          3: `rgba(255,0,0, ${index === selectedSeriesIndex ? 1 : 0.4})`,
+          1: `rgba(0,0,255, ${index === selectedSeriesIndex ? 1 : 0.4})`,
+          2: `rgba(255,0,0, ${index === selectedSeriesIndex ? 1 : 0.4})`,
+          3: `rgba(0,255,0, ${index === selectedSeriesIndex ? 1 : 0.4})`,
         }
         return colorMap[index]
       }
@@ -156,6 +156,7 @@ export default {
             type: "line",
             yAxisIndex: 0,
             xAxisIndex: 0,
+            symbol: 'none',
             color: setColor(0),
           },
           {
@@ -163,6 +164,7 @@ export default {
             type: "line",
             yAxisIndex: 1,
             xAxisIndex: 1,
+            symbol: 'none',
             color: setColor(1),
           },
           {
@@ -170,6 +172,7 @@ export default {
             type: "line",
             yAxisIndex: 2,
             xAxisIndex: 2,
+            symbol: 'none',
             color: setColor(2),
           },
           {
@@ -177,6 +180,7 @@ export default {
             type: "line",
             yAxisIndex: 3,
             xAxisIndex: 3,
+            symbol: 'none',
             color: setColor(3),
           },
         ],
