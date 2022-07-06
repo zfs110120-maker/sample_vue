@@ -15,15 +15,15 @@
       </div>
       <div class="aaa">
         <div class="text">趋势图</div>
-        <aaa
+        <channel-line
           v-if="echartShow"
           :chartData="trendChartdata"
-          @brushselected="data => brushselected(data, 1)"
+          @brushselected="data => brushselected(data)"
           @selectedComponent="selectedComponent"
         />
       </div>
       <div class="info-con">
-          <eee v-if="defaultValue" class="eee" ref="eee" :sampleCount="sampleCount" :strengthMax="strengthMax" :timeRanges='timeRanges' @selectedUnit='selectedUnit'/>
+          <info v-if="defaultValue" class="eee" ref="eee" :sampleCount="sampleCount" :strengthMax="strengthMax" :timeRanges='timeRanges' @selectedUnit='selectedUnit'/>
           <div class="fenxi">
             <span class="content">相 位 偏 移：</span>
             <div class="eee1">
@@ -38,29 +38,27 @@
       <div class="chart">
         <div class="text">PRPS图谱</div>
         <div class="bar-con">
-          <ccc v-if="Object.keys(showData.DDatasendData).length > 0 && DDshow" :unit="unit" :chartData="showData.DDatasendData" />
+          <bar v-if="Object.keys(showData.DDatasendData).length > 0 && DDshow" :unit="unit" :chartData="showData.DDatasendData" />
         </div>
       </div>
       <div class="chart">
         <div class="text">PRPD图谱</div>
-        <bbb v-if="echartShow" :chartData="showData.scatterData" @clickNode='clickNode' />
+        <scatter v-if="echartShow" :chartData="showData.scatterData" @clickNode='clickNode' />
       </div>
       <div class="chart" >
         <div class="text">波形图</div>
         <img class="detail-icon" v-show="Object.keys(smallWaveform).length !== 0" @click="goWave" src="../../assets/image/menu/detail-icon.png" alt="" />
-        <ddd :whatSize="1" v-if="Object.keys(smallWaveform).length !== 0" :chartData="smallWaveform"/>
+        <wave :whatSize="1" v-if="Object.keys(smallWaveform).length !== 0" :chartData="smallWaveform"/>
       </div>
     </div>
   </div>
 </template>
 <script>
-import aaa from "./homeinstall/a.vue";
-import bbb from "./homeinstall/b.vue";
-import ccc from "./homeinstall/c.vue";
-// import ccc from "./homeinstall/3d-bar.vue";
-import ddd from "./homeinstall/d.vue";
-import eee from "./homeinstall/e.vue";
-import {散点图数据, 通道数据, 柱状图数据, 波形图数据} from './homeinstall/data'
+import channelLine from "./homeinstall/channel-line.vue";
+import scatter from "./homeinstall/scatter.vue";
+import bar from "./homeinstall/bar.vue";
+import wave from "./homeinstall/wave.vue";
+import info from "./homeinstall/info.vue";
 import eleCalendar from 'ele-calendar'
 import 'ele-calendar/dist/vue-calendar.css'
 import { mapState } from "vuex";
@@ -68,23 +66,17 @@ import { mapState } from "vuex";
 
 export default {
   components: {
-    aaa,
-    bbb,
-    ccc,
-    ddd,
-    eee,
+    channelLine,
+    scatter,
+    bar,
+    wave,
+    info,
     eleCalendar
   },
   data() {
     return {
       defaultValue: '', // 默认值,搜索时赋值
       timeRanges: [],
-      通道数据: Object.freeze(通道数据),
-      散点图数据: Object.freeze(散点图数据),
-      柱状图数据: Object.freeze(柱状图数据),
-      波形图数据: Object.freeze(波形图数据),
-      散点图选中的数据: [],
-      filterScatterData: [],
       datedef: [
         // {"date": "2021-11-30"},
         // {"date": "2021-11-25"},
@@ -326,14 +318,7 @@ export default {
       this.unit = val;
    },
 
-    过滤散点图数据() {
-      this.filterScatterData = this.散点图选中的数据
-    },
-    散点图框选(data) {
-      this.散点图选中的数据 = Object.freeze(data)
-      this.过滤散点图数据()
-    },
-    通道图框选(data) {
+    channelSelected(data) {
       this.smallWaveform = {};
       this.timeRanges = data;
       setTimeout(() => {
@@ -350,17 +335,12 @@ export default {
       this.scatterDatasend(this.defaultValue);
     },
     /** 当框选的内容发生变化的时候触发 */
-    brushselected(data, type) {
-      console.log(data);
+    brushselected(data) {
       this.startTime = data[0]
       this.endTime = data[1]
       sessionStorage.setItem('startTime', this.startTime);
       sessionStorage.setItem('endTime', this.endTime);
-      let map = {
-        1: this.通道图框选,
-        2: this.散点图框选
-      }
-      map[type](data)
+      this.channelSelected(data)
     },
   },
   watch:{

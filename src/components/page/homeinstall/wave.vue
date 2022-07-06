@@ -46,8 +46,6 @@ export default {
         data = [...data];
         data[_index] = {
           value: data[_index],
-
-          // symbolSize: 20,
           symbol: "circle",
           itemStyle: {
             color: "red",
@@ -90,7 +88,7 @@ export default {
           xAxisIndex: "all", // 实现多个图的贯穿 X 轴提示线
         },
       };
-      this.dataZoom = [{ type: "inside", xAxisIndex: "all" }];
+      this.dataZoom = this.whatSize == 2 ? [{ type: "inside", xAxisIndex: "all" }] : [];
       this.axisLine = { show: true };
       this.axisLabel = { show: true };
       this.grid = [
@@ -106,8 +104,8 @@ export default {
       let options = {
         tooltip: this.tooltip,
         axisPointer: this.axisPointer,
-        grid: this.grid,
         dataZoom: this.dataZoom,
+        grid: this.grid,
         xAxis: [
           {
             type: "category",
@@ -226,7 +224,7 @@ export default {
             symbolSize: (data, item) => {
               let index = item.dataIndex;
               if (index === showPoint[0]) return 10;
-              return 8;
+              return 2;
             },
           },
           {
@@ -241,7 +239,7 @@ export default {
             symbolSize: (data, item) => {
               let index = item.dataIndex;
               if (index === showPoint[1]) return 10;
-              return 8;
+              return 2;
             },
           },
           {
@@ -256,7 +254,7 @@ export default {
             symbolSize: (data, item) => {
               let index = item.dataIndex;
               if (index === showPoint[2]) return 10;
-              return 8;
+              return 2;
             },
           },
           {
@@ -271,7 +269,7 @@ export default {
             symbolSize: (data, item) => {
               let index = item.dataIndex;
               if (index === showPoint[3]) return 10;
-              return 8;
+              return 2;
             },
           },
         ],

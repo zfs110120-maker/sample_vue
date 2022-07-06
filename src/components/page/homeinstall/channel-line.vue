@@ -201,6 +201,10 @@ export default {
   },
   methods: {
     init() {
+      if (this.$refs.echart == null) {
+        return
+      }
+      echarts.dispose(this.$refs.echart)
       let myEchart = echarts.init(this.$refs.echart);
       myEchart.setOption(this.echartOptions);
       this.myEchart = myEchart

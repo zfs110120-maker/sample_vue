@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 3450323 */
-  src: url('iconfont.woff2?t=1654425494714') format('woff2'),
-       url('iconfont.woff?t=1654425494714') format('woff'),
-       url('iconfont.ttf?t=1654425494714') format('truetype');
+  src: url('iconfont.woff2?t=1657078497851') format('woff2'),
+       url('iconfont.woff?t=1657078497851') format('woff'),
+       url('iconfont.ttf?t=1657078497851') format('truetype');
 }
 
 .iconfont {
@@ -16,15 +16,5 @@
 .newfontshandian:before {
   content: "\e8c5";
   font-size: 30px;
-}
-
-
-[class^="newfont"], [class*=" newfont"] {
-  font-family:"fontFamily" !important;
-  /* 以下内容参照第三方图标库本身的规则 */
-  font-size: 18px;
-  font-style:normal;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 

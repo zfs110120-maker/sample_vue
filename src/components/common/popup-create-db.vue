@@ -140,7 +140,8 @@ export default {
         }
       ],
       radioList: ['停止使用', '投入使用', '环境采集'],
-      active: 0
+      active: 0,
+      parentMenuId: 0
     }
   },
   watch: {
@@ -153,6 +154,9 @@ export default {
     isEdit(value) {
       console.log(value)
       value ? this.editDb(this.pid) : this.init()
+    },
+    parentId(value) {
+      this.parentMenuId = value
     }
   },
   methods: {
@@ -240,7 +244,7 @@ export default {
 
       this.$http.post('/db', {
         ...this.form,
-        parentMenuId: this.parentId,
+        parentMenuId: this.parentMenuId,
         channelStateList: channelStateList,
         space12: this.collecStatusList[0].num || '',
         space23: this.collecStatusList[1].num || '',

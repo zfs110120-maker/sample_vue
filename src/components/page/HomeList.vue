@@ -120,18 +120,18 @@ export default {
   mounted(){
     if(this.$route.query.id) {
       this.showTable = false
-      this.tableId = this.$route.query.id
+      this.tableId = Number(this.$route.query.id)
     }
     else {
       this.showTable = true;
       this.getList({pagesize: this.pagesize,singlePageNum: this.singlePageNum}, this.dataProp, this.sortWay);
+      this.$nextTick(()=>{
+        let btnprev = document.getElementsByClassName("btn-prev");
+        let btnnext = document.getElementsByClassName("btn-next");
+        btnprev[0].innerText = "上一页";
+        btnnext[0].innerText = "下一页";
+      })
     }
-    this.$nextTick(()=>{
-      let btnprev = document.getElementsByClassName("btn-prev");
-      let btnnext = document.getElementsByClassName("btn-next");
-      btnprev[0].innerText = "上一页";
-      btnnext[0].innerText = "下一页";
-    })
   },
   methods:{
     goWave() {

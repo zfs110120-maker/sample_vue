@@ -12,17 +12,7 @@ export default {
     return {
       myEchart: null,
       showY: [],
-      seriesIndex: null,
-      isMove: false,
-      dataIndex: null,
-      dataValue: null,
-      showPoint: [],
-      tooltip: {},
-      axisPointer: {},
-      dataZoom: [],
-      axisLine: {},
-      axisLabel: {},
-      grid:[]
+      showPoint: []
     };
   },
   computed: {
@@ -32,9 +22,28 @@ export default {
     yAxisData({ chartData }) {
       return chartData.channels
     },
-    echartOptions({ xAxisData, yAxisData }) {
+    point({ chartData }) {
+      let data = chartData.channels.map((item) => chartData.t.indexOf(item.head_x));
+      return data;
+    },
+    echartOptions({ showY, xAxisData, showPoint }) {
+      let setData = (index) => {
+        let data = showY[index].y;
+        let _index = showPoint[index];
+        data = [...data];
+        data[_index] = {
+          value: data[_index],
+          symbol: "circle",
+          itemStyle: {
+            color: "red",
+            borderWidth: 100,
+            borderType: "solid",
+          },
+        };
+        return data;
+      };
       let option = {
-        dataZoom: [{ type: "inside", xAxisIndex: "all" }],
+        dataZoom: [{ type: "inside", xAxisIndex: "all" }, { type: "inside", yAxisIndex: 0 }, { type: "inside", yAxisIndex: 1 }, { type: "inside", yAxisIndex: 2 }, { type: "inside", yAxisIndex: 3 }],
         yAxis: [
             {
                 type: 'value',
@@ -144,7 +153,7 @@ export default {
                     color: 'black',
                     width: 1,
                 },
-            },
+            }
         },
         // 调整表格两边空白的区域
         grid: {
@@ -160,45 +169,61 @@ export default {
 
         series: [
             {
-                // 曲线数据配置
-                data: yAxisData[0].y,
-                // data: [[-10,0],[50,50],[100,100],[200,2000]],
-                // data: [[0,0],[50,50],[100,100],[200,-10]],
-                // 曲线名
-                name: '通道1',
-                // 设置参数对应的y坐标轴的索引
-                yAxisIndex: 0,
-                type: 'line',
-                // 曲线平滑设置
-                smooth: true,
+              // 曲线数据配置
+              data: setData(0),
+              name: '通道1',
+              // 设置参数对应的y坐标轴的索引
+              yAxisIndex: 0,
+              type: 'line',
+              // 曲线平滑设置
+              smooth: true,
+              symbolSize: (data, item) => {
+                let index = item.dataIndex;
+                if (index === showPoint[0]) return 20;
+                return 2;
+              }
             },
             {
-                data: yAxisData[1].y,
-                // 曲线名
-                name: '通道2',
-                // 设置所在曲线对应的y坐标轴的索引
-                yAxisIndex: 1,
-                type: 'line',
-                // 曲线平滑设置
-                smooth: true,
+              data: setData(1),
+              name: '通道2',
+              // 设置所在曲线对应的y坐标轴的索引
+              yAxisIndex: 1,
+              type: 'line',
+              // 曲线平滑设置
+              smooth: true,
+              symbolSize: (data, item) => {
+                let index = item.dataIndex;
+                if (index === showPoint[1]) return 15;
+                return 2;
+              }
             },
             {
-                data: yAxisData[2].y,
-                name: '通道3',
-                // 设置参数对应的y坐标轴的索引
-                yAxisIndex: 2,
-                type: 'line',
-                // 曲线平滑设置
-                smooth: true,
+              data: setData(2),
+              name: '通道3',
+              // 设置参数对应的y坐标轴的索引
+              yAxisIndex: 2,
+              type: 'line',
+              // 曲线平滑设置
+              smooth: true,
+              symbolSize: (data, item) => {
+                let index = item.dataIndex;
+                if (index === showPoint[2]) return 15;
+                return 2;
+              }
             },
             {
-                data: yAxisData[3].y,
-                name: '通道4',
-                // 设置参数对应的y坐标轴的索引
-                yAxisIndex: 3,
-                type: 'line',
-                // 曲线平滑设置
-                smooth: true,
+              data: setData(3),
+              name: '通道4',
+              // 设置参数对应的y坐标轴的索引
+              yAxisIndex: 3,
+              type: 'line',
+              // 曲线平滑设置
+              smooth: true,
+              symbolSize: (data, item) => {
+                let index = item.dataIndex;
+                if (index === showPoint[3]) return 15;
+                return 2;
+              }
             }
         ],
         tooltip: {
@@ -222,6 +247,21 @@ export default {
     },
   },
   watch: {
+    point: {
+      handler(val) {
+        this.showPoint = val;
+      },
+      immediate: true,
+    },
+    yAxisData: {
+      handler(val) {
+        this.showY = val;
+      },
+      immediate: true,
+    },
+    echartOptions(val) {
+      this.myEchart.setOption(val);
+    }
   },
   mounted() {
     this.init();
@@ -231,6 +271,12 @@ export default {
       let myEchart = echarts.init(this.$refs.echart);
       this.myEchart = myEchart;
       myEchart.setOption(this.echartOptions);
+      myEchart.on("click", (data) => {
+        let componentIndex = data.componentIndex;
+        this.$set(this.showPoint, componentIndex, data.dataIndex);
+        // this.$emit("selectedComponent", componentIndex);
+        this.$emit("selectedComponent1", data); //大波浪
+      });
     }
   },
 };

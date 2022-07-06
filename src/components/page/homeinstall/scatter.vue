@@ -146,7 +146,7 @@ export default {
             scale: true,
             min:  0,
             max: 360,
-            splitNumber: 5
+            interval: 90
           }
         ],
         yAxis: [
@@ -209,6 +209,10 @@ export default {
       this.filterScatterData = this.filterScatterData.filter(el => el.g == 1)
     },
     init() {
+      if (this.$refs.echart == null) {
+        return
+      }
+      echarts.dispose(this.$refs.echart)
       let myEchart = echarts.init(this.$refs.echart);
       this.myEchart = myEchart;
       myEchart.setOption(this.echartOptions);
@@ -218,19 +222,19 @@ export default {
         let node = this.filterScatterData[dataIndex];
         this.$emit("clickNode", node);
       });
-      let brushselected = debounce((params) => {
+      let brushselectedDebounce = debounce((params) => {
         try {
           let selectedList = params.batch[0].selected[0].dataIndex;
           selectedList = this.filterScatterData.filter((item, index) =>
             selectedList.includes(index)
           );
-          selectedList.length && this.$emit("brushselected", selectedList);
+          // selectedList.length && this.$emit("brushselected", selectedList);
           if (selectedList.length) this.selectedList = selectedList
         } catch (error) {
           console.log(error);
         }
       }, 300);
-      myEchart.on("brushselected", brushselected);
+      myEchart.on("brushselected", brushselectedDebounce);
     },
     scatterIdsend(){    //散点图刷新反馈
       this.myEchart.dispatchAction({

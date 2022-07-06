@@ -17,18 +17,18 @@
         <div class="progress">
           <div class="location-con">
             <div :style="{ position: 'absolute', left: item.position / positionLength * 100 + '%'}" v-for="(item, index) in positionList" :key="'position' + index" @click="selectPosition(index)">
-              <i class="iconfont newfontshandian" :class="item.big && 'big-size'" :style="{ color: item.color }"></i>
+              <i class="icon iconfont newfontshandian" :class="item.big && 'big-size'" :style="{ color: item.color }"></i>
             </div>
           </div>
           <div class="progress-line"></div>
           <div class="sensor-container">
             <div v-for="(item, index) in collecStatusList" class="sensor-item" :class="index | leftStatus">
-              <div class="sensor-con" v-show="item.isShow">
+              <div class="sensor-con" v-show="item.isShow == 1">
                 <div class="circle" :class="index | classStatus"></div>
                 <img :src="item.img" class="sensor-img" alt="" />
                 <p class="sensor-name">{{ item.sensorName }}</p>
               </div>
-              <p class="distance" v-if="index != 3 && item.distance">{{ item.distance }}m</p>
+              <p class="distance" v-if="(index != 3 && item.distance) && item.isShow == 1">{{ item.distance }}m</p>
             </div>
           </div>
         </div>
@@ -230,18 +230,10 @@ export default {
         this.collecStatusList[0].distance = data.baseInfo.space12 || 0
         this.collecStatusList[1].distance = data.baseInfo.space23 || 0
         this.collecStatusList[2].distance = data.baseInfo.space34 || 0
-        if (this.collecStatusList[0].distance) {
-          this.collecStatusList[0].isShow = true
-          this.collecStatusList[1].isShow = true
-        }
 
-        if (this.collecStatusList[1].distance) {
-          this.collecStatusList[2].isShow = true
-        }
-
-        if (this.collecStatusList[2].distance) {
-          this.collecStatusList[3].isShow = true
-        }
+        data.baseInfo.channelStateList.forEach((item, index) => {
+          this.collecStatusList[index].isShow = item
+        })
 
         this.tableData.forEach(item => {
           this.sampleCount += Number(item.sampleCount)
@@ -331,6 +323,10 @@ export default {
       this.tableData.forEach(item=>{
         data.push({ value:item.ratio, name:item.id});
       })
+      // if (document.getElementById("pie") == null) {
+      //   return
+      // }
+      // echarts.dispose(document.getElementById("pie"))
       echart = document.getElementById("pie");
       this.myPieChart = echarts.init(echart);
       var option = {
@@ -482,7 +478,7 @@ export default {
 }
 
 .progress-line {
-  width: 770px;
+  width: 100%;
   height: 8px;
   background-color: #3E80BD;
   border-radius: 20px;
@@ -523,9 +519,9 @@ export default {
   margin-left: 162px;
 } */
 
-.third-left {
+/* .third-left {
   width: 67px !important;
-}
+} */
 
 .content_box {
   background: #fff;
@@ -550,7 +546,7 @@ export default {
   margin-top: -12px;
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .sensor-con {
@@ -561,6 +557,7 @@ export default {
 }
 
 .distance {
+  margin: 40px 100px 0;
   width: 100%;
   text-align: center;
   font-size: 16px;

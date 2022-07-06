@@ -13,7 +13,7 @@ export default {
     return {
       myEchart: null,
       step: 0,
-      stepNum: 5,
+      stepNum: 3,
       sum:0,    //x轴的总和
       timer:null,
       zAxis3D:{},
@@ -56,9 +56,11 @@ export default {
           name: '',
           type: "value",
           splitNumber: 5,
-          data: [0, 2000],
+          interval: 500,
+          min: 0,
+          max: 2000,
           axisLabel:{
-            margin:20,
+            margin: 15,
             formatter:(parmas)=>{
               return parmas
             }
@@ -70,7 +72,7 @@ export default {
           type: "value",
           splitNumber: 3,
           axisLabel:{
-            margin:20,
+            margin: 15,
             interval:5,
             formatter:(parmas)=>{
               return parmas - 80
@@ -87,25 +89,18 @@ export default {
           min,
           max,
           axisLabel:{
-            margin:20,
-            formatter:(value)=>{
-              return `{a|${value}}`
-            },
-            rich:{
-              a:{
-                width:40,
-                height:15,
-                backgroundColor:"transparent",
-              }
-            }
+            margin: 28
           },
         },
-        yAxis3D:{
+        yAxis3D: {
             name: '',
             type: "value",
-            // data:[0,90,180,270,360],
             min: 0,
             max: 360,
+            interval: 90,
+            axisLabel:{
+              margin: 5
+            },
           },
         zAxis3D: this.zAxis3D,
         grid3D: {
@@ -113,12 +108,12 @@ export default {
           boxHidth: 180,
           boxDepth: 180,
           viewControl: {
-            rotateSensitivity: 0, // 不能旋转
             zoomSensitivity: 0, // 不能缩放
-            beta: 65,
+            beta: 40,
             projection: "perspective",
-            distance: 280,
+            distance: 300,
             alpha: 15,
+            animation: true
           },
           top: -40,
           axisPointer:{
@@ -192,7 +187,7 @@ export default {
   },
   watch: {
     echartOptions(val) {
-      this.myChart.setOption(val, true);
+      this.myChart.setOption(val);
     },
     "unit":{
       handler(){
@@ -221,7 +216,7 @@ export default {
         }
         this.step += this.stepNum;
         if(this.step >= this.chartData.x.length - 1) this.step = 0
-      }, 1000);
+      }, 200);
       this.$once("hook:beforeDestroy", () => {
         clearInterval(this.timer);
         this.timer = null;

@@ -41,7 +41,8 @@ Vue.use(scroll)
 import axios from "axios";
 import Qs from "qs";
 // var baseURL = window.g.serverUrl ;
-var baseURL = '/api' ;
+var baseURL = process.env.API_HOST ;
+console.log(process.env.API_HOST)
 axios.defaults.headers.post['Content-Type'] = "text/plain";
 // axios.defaults.transformRequest = [obj => Qs.stringify(obj)];
 axios.defaults.baseURL = baseURL;

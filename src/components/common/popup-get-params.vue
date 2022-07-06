@@ -57,7 +57,6 @@ export default {
     },
     handCollectionOk() {
       this.$emit('cancleCollect', false)
-      console.log(this.sourceId)
       this.$http.post('/sample/start', {
         dbId: this.sourceId,
         argTime: Number(this.timeBase),

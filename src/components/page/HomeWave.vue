@@ -9,8 +9,8 @@
         <img src="../../assets/image/menu/change-chart-icon.png" class="change-chart-icon" alt="Change">
         显示模式切换
       </div>
-      <ddd v-if="Object.keys(WaveformData).length !== 0 && !showMoreLine" :whatSize="2" :chartData="WaveformData"  @selectedComponent1="selectedComponent1"/>
-      <more-line-echart v-if="showMoreLine" :chartData="WaveformData"></more-line-echart>
+      <wave v-if="Object.keys(waveFormData).length !== 0 && !showMoreLine" :whatSize="2" :chartData="waveFormData"  @selectedComponent1="selectedComponent1"/>
+      <more-line-echart v-if="showMoreLine" :chartData="waveFormData" @selectedComponent1="selectedComponent1"></more-line-echart>
     </div>
     <div class="right">
       <div class="right_card">
@@ -45,9 +45,8 @@
 </template>
 <script>
 import * as echarts from 'echarts';
-import ddd from './homeinstall/d.vue'
+import wave from './homeinstall/wave.vue'
 import MoreLineEchart from './homeinstall/MoreLineEchart.vue'
-import {波形图数据} from './homeinstall/data'
 import { mapState, mapMutations} from "vuex";
 export default {
   props: {
@@ -57,13 +56,12 @@ export default {
     }
   },
   components: {
-    ddd,
+    wave,
     MoreLineEchart
   },
   data () {
     return {
       information:'',
-      波形图数据: Object.freeze(波形图数据),
       list:[
         {name:'序号',content:""},
         {name:'时间',content:""},
@@ -81,7 +79,7 @@ export default {
         {name:'2超前4',content:''},
         {name:'3超前4',content:''},
      ],
-     WaveformData: {},//波形图数据
+     waveFormData: {},//波形图数据
 		 id:"",
      tableData:[],
      index:"",
@@ -122,7 +120,7 @@ export default {
     },
     getWaveData(value) {
       this.$http.get(`/data/wave_graph?day=${sessionStorage.getItem('toDay')}&id=${value}&getInfo=true`).then(res=>{
-        this.WaveformData = res.data;
+        this.waveFormData = res.data;
         const info = res.data.info;
         this.list[0].content = info.signalTime;
         this.list[1].content = info.duration;
@@ -139,7 +137,7 @@ export default {
         this.list2[5].content = info.time34;
         this.information = info.note
         this.pointx = []
-        this.WaveformData.channels.forEach((item, index) => {
+        this.waveFormData.channels.forEach((item, index) => {
           this.pointx.push(item.head_x)
         })
       })
@@ -185,7 +183,7 @@ export default {
     filterdatasend(){     //滤波
       if(this.filteringName === '滤波'){
         this.$http.get(`/data/wave_graph?day=${sessionStorage.getItem('toDay')}&id=${this.id}&getInfo=true&filterWave=true`).then(res=>{
-          this.WaveformData = res.data;
+          this.waveFormData = res.data;
           const info = res.data.info;
           this.list[0].content = info.signalTime;
           this.list[1].content = info.duration;
@@ -202,7 +200,7 @@ export default {
           this.list2[5].content = info.time34;
           this.information = info.note
           this.pointx = []
-          this.WaveformData.channels.forEach((item, index) => {
+          this.waveFormData.channels.forEach((item, index) => {
             this.pointx.push(item.head_x)
           })
           this.filteringName = "恢复";
