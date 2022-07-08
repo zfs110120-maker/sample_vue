@@ -168,7 +168,7 @@ export default {
     if(this.collection || sessionStorage.getItem('model') == 'true') {
       this.dbStatus = 1
       this.detect = setInterval(() => {
-        this.locationgRessend(this.isChoseDb);
+        this.locationgRessend(sessionStorage.getItem('samplingDbId'));
       }, 1000)
     }
   },
@@ -202,6 +202,7 @@ export default {
       if (data) {
         this.location = setInterval(() => {
           this.locationgRessend(this.isChoseDb);
+          this.SETCOLLECTION(true)
         }, 1000)
       }
     },

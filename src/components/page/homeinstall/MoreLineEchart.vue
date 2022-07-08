@@ -179,7 +179,7 @@ export default {
               smooth: true,
               symbolSize: (data, item) => {
                 let index = item.dataIndex;
-                if (index === showPoint[0]) return 20;
+                if (index === showPoint[0]) return 50;
                 return 2;
               }
             },
@@ -193,7 +193,7 @@ export default {
               smooth: true,
               symbolSize: (data, item) => {
                 let index = item.dataIndex;
-                if (index === showPoint[1]) return 15;
+                if (index === showPoint[1]) return 30;
                 return 2;
               }
             },
@@ -207,7 +207,7 @@ export default {
               smooth: true,
               symbolSize: (data, item) => {
                 let index = item.dataIndex;
-                if (index === showPoint[2]) return 15;
+                if (index === showPoint[2]) return 30;
                 return 2;
               }
             },
@@ -221,7 +221,7 @@ export default {
               smooth: true,
               symbolSize: (data, item) => {
                 let index = item.dataIndex;
-                if (index === showPoint[3]) return 15;
+                if (index === showPoint[3]) return 30;
                 return 2;
               }
             }

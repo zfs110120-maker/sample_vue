@@ -130,50 +130,46 @@ export default {
               color: ({data}) => {
                 let x = data[0];
                 let color1 = ""
-                if(x > min && x < max-0.1){
-                   if(this.unit === 'mV'){
-                      if((data[2]>0 && data[2]<200)){
-                        color1 = "#0040FF"
-                      }else if((data[2]>200&&data[2]<400)){
-                        color1 = "#0174DF"
-                      }else if((data[2]>400&&data[2]<600)){
-                        color1 = "#01A9DB"
-                      }else if((data[2]>600&&data[2]<800)){
-                        color1 = "#01DFA5"
-                      }else if((data[2]>800&&data[2]<1000)){
-                        color1 = "#01DF74"
-                      }else if((data[2]>1000&&data[2]<1200)){
-                        color1 = "#01DF3A"
-                      }else if((data[2]>1200&&data[2]<1400)){
-                        color1 = "#01DF01"
-                      }else if((data[2]>1400&&data[2]<1600)){
-                        color1 = "#3ADF00"
-                      }else if((data[2]>1600&&data[2]<1800)){
-                        color1 = "#74DF00"
-                      }else{
-                        color1 = "#D7DF01"
-                      }
-                   }else{
-                     if(data[2]>= 0 && data[2]< 10){
-                        color1 = "#0040FF"
-                      }else if(data[2]>= 10 && data[2]< 20){
-                        color1 = "#01A9DB"
-                      }else if(data[2]>= 20 && data[2]< 30){
-                        color1 = "#01DFA5"
-                      }else if(data[2]>= 30 && data[2]< 40){
-                        color1 = "#01DF74"
-                      }else if(data[2]>= 40 && data[2]< 50){
-                        color1 = "#01DF3A"
-                      }else if(data[2]>= 50 && data[2]< 60){
-                        color1 = "#3ADF00"
-                      }else if(data[2]>= 60 && data[2]< 70){
-                        color1 = "#74DF00"
-                      }else{
-                        color1 = "#D7DF01"
-                      }
-                   }
+                if(this.unit === 'mV'){
+                  if((data[2]>0 && data[2]<400)){
+                    color1 = "#0040FF"
+                  }else if((data[2]>400&&data[2]<800)){
+                    color1 = "#0174DF"
+                  }else if((data[2]>800&&data[2]<1200)){
+                    color1 = "#01A9DB"
+                  }else if((data[2]>1200&&data[2]<1600)){
+                    color1 = "#01DFA5"
+                  }else if((data[2]>1600&&data[2]<2000)){
+                    color1 = "#01DF74"
+                  }else if((data[2]>2000&&data[2]<2400)){
+                    color1 = "#01DF3A"
+                  }else if((data[2]>2400&&data[2]<2800)){
+                    color1 = "#01DF01"
+                  }else if((data[2]>2800&&data[2]<3200)){
+                    color1 = "#3ADF00"
+                  }else if((data[2]>3200&&data[2]<3600)){
+                    color1 = "#74DF00"
+                  }else{
+                    color1 = "#D7DF01"
+                  }
                 }else{
-                  color1 = [0,0,0, 0.001]
+                  if(data[2]>= 0 && data[2]< 10){
+                    color1 = "#0040FF"
+                  }else if(data[2]>= 10 && data[2]< 20){
+                    color1 = "#01A9DB"
+                  }else if(data[2]>= 20 && data[2]< 30){
+                    color1 = "#01DFA5"
+                  }else if(data[2]>= 30 && data[2]< 40){
+                    color1 = "#01DF74"
+                  }else if(data[2]>= 40 && data[2]< 50){
+                    color1 = "#01DF3A"
+                  }else if(data[2]>= 50 && data[2]< 60){
+                    color1 = "#3ADF00"
+                  }else if(data[2]>= 60 && data[2]< 70){
+                    color1 = "#74DF00"
+                  }else{
+                    color1 = "#D7DF01"
+                  }
                 }
                 return color1
               }

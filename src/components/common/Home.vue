@@ -69,7 +69,6 @@ export default {
         showCancelButton: false,
         center: "true"
       }).then(() => {
-        console.log(localStorage.getItem('token'));
         this.$http.post('/admin/logout').then(res=>{
           sessionStorage.setItem('username',"");
           localStorage.removeItem('token');
@@ -78,6 +77,7 @@ export default {
           sessionStorage.setItem('startTime', '')
           sessionStorage.setItem('endTime', '')
           sessionStorage.setItem('channelId', '')
+          sessionStorage.setItem('model', '')
           this.$router.push("/login")
         })
       }).catch(() => {
