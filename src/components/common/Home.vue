@@ -78,6 +78,7 @@ export default {
           sessionStorage.setItem('endTime', '')
           sessionStorage.setItem('channelId', '')
           sessionStorage.setItem('model', '')
+          sessionStorage.removeItem('toDay')
           this.$router.push("/login")
         })
       }).catch(() => {
@@ -95,6 +96,9 @@ export default {
       }
       else {
         return
+      }
+      if (this.tabActive == '/homedata') {
+        sessionStorage.removeItem('toDay')
       }
       this.$router.push({
         path: this.tabActive

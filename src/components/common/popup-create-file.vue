@@ -86,7 +86,7 @@ export default {
       console.log( this.parentId);
 
       this.$http.post('/menu', {
-        parentId: this.parentId,
+        parentId: this.dbId,
         name: this.folderName
       }).then(res=>{
         this.$emit('createNewMenu', true)

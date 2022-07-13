@@ -30,7 +30,7 @@
     <popup-create-file :show-create-dialog.sync="showCreateDialog" :parent-id="parentId" :db-id="dbDir" :file-name="fileName" :is-edit="isEdit" @createNewMenu="createNewMenu" />
 
     <!-- 填写通道名称和说明弹出框 -->
-    <popup-create-db :show-create-db-dialog.sync="showCreateDbDialog" :parent-id="parentId" :pid="sourceId" :is-edit="isEdit" @createNewTable="createNewTable" />
+    <popup-create-db :show-create-db-dialog.sync="showCreateDbDialog" :parent-id="parentId" :db-id="dbDir" :pid="sourceId" :is-edit="isEdit" @createNewTable="createNewTable" />
 
     <!-- 查看数据的提示 -->
     <popup-tips :show-tips-dialog.sync="showTipsDialog" />
@@ -123,13 +123,22 @@ export default {
     handleHead(index) {
       switch(index) {
         case 0:
-          this.showCreateDialog = true;
-          this.isEdit = false;
+          if (this.type === 'folder') {
+            this.showCreateDialog = true;
+            this.isEdit = false;
+          }
+          else {
+            return
+          }
           break;
 
         case 1:
-          this.showCreateDbDialog = true;
-          this.isEdit = false;
+          if (this.type === 'folder') {
+            this.showCreateDbDialog = true;
+            this.isEdit = false;
+          } else {
+            return;
+          }
           break;
 
         case 2:

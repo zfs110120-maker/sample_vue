@@ -60,11 +60,7 @@
           </el-table-column>
           <el-table-column prop="strengthMax" label="放电强度最大值(mV)" width="250" sortable>
           </el-table-column>
-          <el-table-column sortable label="占比">
-            <template slot-scope="scope">
-              {{ scope.row.ratio }}%
-            </template>
-          </el-table-column>
+          <el-table-column sortable label="占比(%)" prop="ratio"></el-table-column>
           <el-table-column prop="caption" label="位置">
           </el-table-column>
       </el-table>
@@ -219,7 +215,6 @@ export default {
       }
       this.$http.get(`db/${value}/stat `).then(res=>{
         this.positionList = [];
-        this.sampleCount = 0
         this.positionLength = 0
         const data = res.data;
         this.tableData = data.locationList
@@ -232,12 +227,13 @@ export default {
         this.collecStatusList[1].distance = data.baseInfo.space23 || 0
         this.collecStatusList[2].distance = data.baseInfo.space34 || 0
 
+        this.sampleCount = data.signalNum
+
         data.baseInfo.channelStateList.forEach((item, index) => {
           this.collecStatusList[index].isShow = item
         })
 
         this.tableData.forEach(item => {
-          this.sampleCount += Number(item.sampleCount)
           if(item.color){
             this.positionList.push({ id:item.id, color:item.color, position: item.displayLocation, big: false });
           };
@@ -289,14 +285,14 @@ export default {
       //   });
       //   return;
       // }
+      let dataSetids = []
+      this.multipleSelection.forEach((item, index) => {
+        dataSetids.push(...item.dayList)
+      })
+      let dataSetid = Array.from(new Set(dataSetids));
+      this.SETDATASETDATE(dataSetid);
 
       this.$router.push("/homeinstall");
-
-      let dataSetid = []
-      this.multipleSelection.forEach(item=>{
-        dataSetid.push(item.dayList[0])
-      })
-      this.SETDATASETDATE(dataSetid);
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;

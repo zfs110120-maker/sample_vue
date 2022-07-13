@@ -83,7 +83,7 @@ export default {
                 this.selectedList.forEach(el => {
                   selectedIdMap[el.id] = true
                 })
-                this.filterScatterData = this.chartData.filter(el => !selectedIdMap[el.id]);
+                this.filterScatterData = this.filterScatterData.filter(el => !selectedIdMap[el.id]);
                 this.scatterIdsend();
               }
             },
@@ -160,9 +160,9 @@ export default {
           {
             data: this.showData,
             type: "scatter",
-            large: true,
-						largeThreshold: 4000,
-						progressive: 100,
+            // large: true,
+						// largeThreshold: 4000,
+						// progressive: 100,
             symbolSize: 4,
             yAxisIndex: 0,
             itemStyle: {

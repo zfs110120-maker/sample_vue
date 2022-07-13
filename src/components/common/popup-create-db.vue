@@ -90,6 +90,10 @@ export default {
       type: Number,
       default: 0
     },
+    dbId: {
+      type: Number,
+      default: 0
+    },
     parentId: {
       type: Number,
       default: 0
@@ -155,7 +159,7 @@ export default {
       console.log(value)
       value ? this.editDb(this.pid) : this.init()
     },
-    parentId(value) {
+    dbId(value) {
       this.parentMenuId = value
     }
   },

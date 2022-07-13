@@ -57,8 +57,6 @@ export default {
           type: "value",
           splitNumber: 5,
           interval: 500,
-          min: 0,
-          max: 2000,
           axisLabel:{
             margin: 15,
             formatter:(parmas)=>{

@@ -43,7 +43,68 @@ export default {
         return data;
       };
       let option = {
-        dataZoom: [{ type: "inside", xAxisIndex: "all" }, { type: "inside", yAxisIndex: 0 }, { type: "inside", yAxisIndex: 1 }, { type: "inside", yAxisIndex: 2 }, { type: "inside", yAxisIndex: 3 }],
+        dataZoom: [{ type: "inside", xAxisIndex: "all" },
+        { type: "slider", yAxisIndex: 0, left: '7.5%',
+        borderColor: 'transparent',
+        borderCap: 'round',
+        fillerColor: 'rgb(255,153,0)',
+        handleIcon: 'path://M30.9,53.2C16.8,53.2,5.3,41.7,5.3,27.6S16.8,2,30.9,2C45,2,56.4,13.5,56.4,27.6S45,53.2,30.9,53.2z M30.9,3.5M36.9,35.8h-1.3z M27.8,35.8 h-1.3H27L27.8,35.8L27.8,35.8z',// 画一个圆形
+        handleSize: '100%',
+        handleStyle: {
+          color: '#3E80BD',
+          borderWidth: 0
+        },
+        width: 10,
+        height: 550,
+        backgroundColor: 'rgba(37, 46, 100, 0.8)', //两边未选中的滑动条区域的颜色
+        filterMode: 'filter',
+        top: 'center'},
+        { type: "slider", yAxisIndex: 1, left: '3%',
+          borderColor: 'transparent',
+          borderCap: 'round',
+          fillerColor: 'rgb(0,0,255)',
+          handleIcon: 'path://M30.9,53.2C16.8,53.2,5.3,41.7,5.3,27.6S16.8,2,30.9,2C45,2,56.4,13.5,56.4,27.6S45,53.2,30.9,53.2z M30.9,3.5M36.9,35.8h-1.3z M27.8,35.8 h-1.3H27L27.8,35.8L27.8,35.8z',// 画一个圆形
+          handleSize: '100%',
+          handleStyle: {
+            color: '#3E80BD',
+            borderWidth: 0
+          },
+          width: 10,
+          height: 550,
+          backgroundColor: 'rgba(37, 46, 100, 0.8)', //两边未选中的滑动条区域的颜色
+          filterMode: 'filter',
+          top: 'center' },
+        { type: "slider", yAxisIndex: 2,
+          left: '91%',
+          borderColor: 'transparent',
+          borderCap: 'round',
+          fillerColor: '#ea5757',
+          handleIcon: 'path://M30.9,53.2C16.8,53.2,5.3,41.7,5.3,27.6S16.8,2,30.9,2C45,2,56.4,13.5,56.4,27.6S45,53.2,30.9,53.2z M30.9,3.5M36.9,35.8h-1.3z M27.8,35.8 h-1.3H27L27.8,35.8L27.8,35.8z',// 画一个圆形
+          handleSize: '100%',
+          handleStyle: {
+            color: '#3E80BD',
+            borderWidth: 0
+          },
+          width: 10,
+          height: 550,
+          backgroundColor: 'rgba(37, 46, 100, 0.8)', //两边未选中的滑动条区域的颜色
+          filterMode: 'filter',
+          top: 'center'},
+          { type: "slider", yAxisIndex: 3, left: '96%',
+          borderColor: 'transparent',
+          borderCap: 'round',
+          fillerColor: 'rgb(0,255,0)',
+          handleIcon: 'path://M30.9,53.2C16.8,53.2,5.3,41.7,5.3,27.6S16.8,2,30.9,2C45,2,56.4,13.5,56.4,27.6S45,53.2,30.9,53.2z M30.9,3.5M36.9,35.8h-1.3z M27.8,35.8 h-1.3H27L27.8,35.8L27.8,35.8z',// 画一个圆形
+          handleSize: '100%',
+          handleStyle: {
+            color: '#3E80BD',
+            borderWidth: 0
+          },
+          width: 10,
+          height: 550,
+          backgroundColor: 'rgba(37, 46, 100, 0.8)', //两边未选中的滑动条区域的颜色
+          filterMode: 'filter',
+          top: 'center' }],
         yAxis: [
             {
                 type: 'value',
@@ -179,7 +240,7 @@ export default {
               smooth: true,
               symbolSize: (data, item) => {
                 let index = item.dataIndex;
-                if (index === showPoint[0]) return 50;
+                if (index === showPoint[0]) return 30;
                 return 2;
               }
             },
@@ -287,6 +348,8 @@ export default {
   width: 100%;
   height: 100%;
   position: relative;
+  left: 50%;
+  transform: translateX(-50%);
   padding: 32px;
   margin-top: 128px;
 }

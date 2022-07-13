@@ -78,8 +78,7 @@ export default {
       defaultValue: '', // 默认值,搜索时赋值
       timeRanges: [],
       datedef: [
-        // {"date": "2021-11-30"},
-        // {"date": "2021-11-25"},
+        // {"date": "2021-11-30"}
       ],
       prop: 'date', //对应日期字段名
       phaseShift:0,
@@ -94,7 +93,7 @@ export default {
       unit:'mV',
       DDshow:true,
       finalSelectDate:[],
-	    calendarShow:true,
+	    calendarShow: true,
       hallway: 'c1',
       sourceId: sessionStorage.getItem('sourceId'),
       channelId: 1,
@@ -165,7 +164,7 @@ export default {
             this.defaultValue = sessionStorage.getItem("toDay")
           }
           else {
-            this.defaultValue = dateList[0];
+            this.defaultValue = dateList[dateList.length - 1];
           }
           sessionStorage.setItem('toDay', this.defaultValue);
           this.dataDayconfirm(this.defaultValue);
@@ -186,7 +185,7 @@ export default {
               this.defaultValue = sessionStorage.getItem("toDay")
             }
             else {
-              this.defaultValue = dateList[0];
+              this.defaultValue = dateList[dateList.length - 1];
             }
             sessionStorage.setItem('toDay', this.defaultValue);
             this.dataDayconfirm(this.defaultValue);
