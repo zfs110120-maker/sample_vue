@@ -255,7 +255,7 @@ export default {
         space34: this.collecStatusList[2].num || ''
       }).then(res=>{
         this.clickClose();
-        this.$emit('createNewTable', true);
+        this.$emit('createNewTable', res.data.id);
         this.$notify({
           title: '信息提示',
           message: '数据库新建成功',

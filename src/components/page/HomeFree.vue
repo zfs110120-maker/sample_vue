@@ -69,6 +69,9 @@
 
     <!-- 采集参数确认 -->
     <popup-get-params :show-get-dialog.sync="showGetDialog" :source-id="isChoseDb" @cancleCollect="cancleCollect" @collect="collect" />
+
+    <!-- 查看数据的提示 -->
+    <popup-tips :show-tips-dialog.sync="showTipsDialog" />
   </div>
 </template>
 <script>
@@ -76,13 +79,15 @@ import * as echarts from 'echarts';
 import { color } from 'echarts';
 import { mapState, mapMutations} from "vuex";
 import PopupGetParams from '../common/popup-get-params.vue'
+import PopupTips from '../common/popup-tips.vue';
 import enums from '../../utils/enums.js'
 import '../../assets/icon/iconfont.css'
 
 
 export default {
   components: {
-    PopupGetParams
+    PopupGetParams,
+    PopupTips
   },
   filters: {
     classStatus(value) {
@@ -110,6 +115,7 @@ export default {
   },
   data () {
     return {
+      showTipsDialog: false,
       collecStatusList: [
         {
           img: require('../../assets/image/menu/sensor1.png'),
@@ -203,6 +209,7 @@ export default {
       }
     },
     refresh(value){
+      this.showTipsDialog = true;
       this.locationgRessend(value);
     },
 
@@ -214,6 +221,7 @@ export default {
         return;
       }
       this.$http.get(`db/${value}/stat `).then(res=>{
+        this.showTipsDialog = false;
         this.positionList = [];
         this.positionLength = 0
         const data = res.data;

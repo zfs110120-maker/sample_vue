@@ -56,7 +56,8 @@ export default {
           name: '',
           type: "value",
           splitNumber: 5,
-          interval: 500,
+          interval: 2500,
+          splitLine: { show: false },
           axisLabel:{
             margin: 15,
             formatter:(parmas)=>{
@@ -69,6 +70,7 @@ export default {
           name: '',
           type: "value",
           splitNumber: 3,
+          splitLine: { show: false },
           axisLabel:{
             margin: 15,
             interval:5,
@@ -89,34 +91,36 @@ export default {
           axisLabel:{
             margin: 28
           },
+          splitLine: { show: false }
         },
         yAxis3D: {
-            name: '',
-            type: "value",
-            min: 0,
-            max: 360,
-            interval: 90,
-            axisLabel:{
-              margin: 5
-            },
+          name: '',
+          type: "value",
+          min: 0,
+          max: 360,
+          interval: 90,
+          axisLabel:{
+            margin: 5
           },
+        },
         zAxis3D: this.zAxis3D,
         grid3D: {
           boxWidth: 150,
           boxHidth: 180,
           boxDepth: 180,
           viewControl: {
+            rotateSensitivity: 0,  // 不能旋转
             zoomSensitivity: 0, // 不能缩放
-            beta: 40,
+            beta: 55,
             projection: "perspective",
             distance: 300,
             alpha: 15,
             animation: true
           },
           top: -40,
-          axisPointer:{
-            show:false,
-          },
+          axisPointer: {
+            show: false,
+          }
         },
         series: [
           {
@@ -124,6 +128,7 @@ export default {
             barSize: 3,
             data: echartData,
             grid3DIndex:1,
+            label: { show: false },
             itemStyle: {
               color: ({data}) => {
                 let x = data[0];
@@ -170,6 +175,11 @@ export default {
                   }
                 }
                 return color1
+              },
+            },
+            emphasis: {
+              label: {
+                show: false
               }
             },
             animation: true

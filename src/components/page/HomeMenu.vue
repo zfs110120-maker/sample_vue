@@ -13,10 +13,10 @@
         <div class="line-middle"></div>
 
         <el-tree class="table-con" :data="askFilelist" ref="dataConfigTree" node-key="id" highlight-current default-expand-all @node-click="getReadDbcontents">
-          <div class="custom-tree-node" slot-scope="{ node, data }">
+          <span class="custom-tree-node" slot-scope="{ node, data }">
             <img class="img-icon" v-if="data.type === 'db'" src="../../assets/image/menu/db.png" alt="">
             <span class="db-name">{{ data.name }}</span>
-          </div>
+          </span>
         </el-tree>
 
       </div>
@@ -31,9 +31,6 @@
 
     <!-- 填写通道名称和说明弹出框 -->
     <popup-create-db :show-create-db-dialog.sync="showCreateDbDialog" :parent-id="parentId" :db-id="dbDir" :pid="sourceId" :is-edit="isEdit" @createNewTable="createNewTable" />
-
-    <!-- 查看数据的提示 -->
-    <popup-tips :show-tips-dialog.sync="showTipsDialog" />
   </div>
 </template>
 <script>
@@ -41,20 +38,17 @@ import { mapState, mapMutations} from "vuex";
 import HomeFree from './HomeFree.vue';
 import PopupCreateFile from '../common/popup-create-file.vue';
 import PopupCreateDb from '../common/popup-create-db.vue';
-import PopupTips from '../common/popup-tips.vue';
 
 export default {
   components: {
     HomeFree,
     PopupCreateFile,
-    PopupCreateDb,
-    PopupTips
+    PopupCreateDb
   },
   data() {
     return {
       showCreateDialog: false,
       showCreateDbDialog: false,
-      showTipsDialog: false,
       isShowLeft: true,
       headList: [
         {
@@ -168,6 +162,8 @@ export default {
     createNewTable(data) {
       if(data) {
         this.getAskFilelist()
+        this.sourceId = data;
+        this.$refs.dataConfigTree.setCurrentKey(data);
       }
     },
 

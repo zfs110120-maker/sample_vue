@@ -67,7 +67,7 @@ export default {
       let yname = this.whatSize == 2 ? 'mV' : '';
       let isShow = false;
       //小波形
-      this.tooltip = {
+      this.tooltip = this.whatSize == 2 ? {
         trigger: "axis",
         formatter: (parmas) => {
           let str = "";
@@ -82,15 +82,15 @@ export default {
           });
           return str;
         },
-      };
-      this.axisPointer = {
+      } : {};
+      this.axisPointer = this.whatSize == 2 ? {
         link: {
           xAxisIndex: "all", // 实现多个图的贯穿 X 轴提示线
         },
-      };
+      } : {};
       this.dataZoom = this.whatSize == 2 ? [{ type: "inside", xAxisIndex: "all" }] : [];
       this.axisLine = { show: true };
-      this.axisLabel = { show: true };
+      this.axisLabel = this.whatSize == 2 ? { show: true }: { show: false }
       this.grid = [
         {left:"60px",right:"40px", top: "3%", height: "21.2%" },
         {left:"60px",right:"40px", top: "26%", height: "21.2%" },
@@ -347,7 +347,7 @@ export default {
   width: 100%;
   position: relative;
   padding: 0 32px;
-  margin-top: 128px;
+  margin-top: 38px;
 }
 
 .echart {

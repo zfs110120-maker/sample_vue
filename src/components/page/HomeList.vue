@@ -10,7 +10,7 @@
       class="table_box_table"
       :cell-style="cellStyle"
       @sort-change="onSortChange">
-      <el-table-column prop="id" label="序号"  width="60" align="center">
+      <el-table-column prop="showId" label="序号"  width="60" align="center">
       </el-table-column>
       <el-table-column prop="time" label="时间" width="80" sortable="custom" :sort-orders="['ascending','descending']" align="center">
       </el-table-column>
@@ -80,7 +80,7 @@
     </div>
   </div>
   <template v-else>
-    <home-wave :table-id="tableId" @goTable="goTable"></home-wave>
+    <home-wave :table-id="tableId" :show-table-id="showId" @goTable="goTable"></home-wave>
   </template>
 </div>
 </template>
@@ -102,6 +102,7 @@ export default {
       optionShow:false,
       showTable: true,
       tableId: null,
+      showId: null,
       dataProp: '',
       sortWay: null
     }
@@ -140,6 +141,7 @@ export default {
     goTable(data) {
       if(data) {
         this.showTable = true
+        this.getList({pagesize: this.pagesize,singlePageNum: this.singlePageNum}, this.dataProp, this.sortWay);
       }
     },
     getList(data, sort, asc){
@@ -164,6 +166,7 @@ export default {
 
     check(data){
       this.tableId = Number(data.id);
+      this.showId = Number(data.showId);
       this.showTable = false;
     },
 

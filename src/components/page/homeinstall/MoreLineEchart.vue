@@ -110,6 +110,8 @@ export default {
                 type: 'value',
                 // 让表格的刻度向靠里侧显示
                 name: 'mV',
+                min: '-5000',
+                max: 5000,
                 axisTick: {
                   show: true,
                   inside: true,
@@ -136,6 +138,8 @@ export default {
             {
                 type: 'value',
                 name: 'mV',
+                min: '-5000',
+                max: 5000,
                 axisTick: {
                   show: true,
                   inside: false,
@@ -155,6 +159,8 @@ export default {
             {
                 type: 'value',
                 name: 'mV',
+                min: '-5000',
+                max: 5000,
                 axisTick: {
                 show: true,
                 inside: true,
@@ -176,6 +182,8 @@ export default {
             {
                 type: 'value',
                 name: 'mV',
+                min: '-5000',
+                max: 5000,
                 axisTick: {
                 show: true,
                 inside: true,

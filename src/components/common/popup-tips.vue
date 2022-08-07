@@ -56,11 +56,11 @@ export default {
 
 .title {
   margin-top: 26px;
-  margin-left: 74px;
   font-size: 24px;
   font-weight: 400;
   color: #0a244c;
   letter-spacing: 6px;
+  text-align: center;
 }
 
 .line {

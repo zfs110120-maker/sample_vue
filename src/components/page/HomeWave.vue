@@ -5,12 +5,12 @@
       <div class="wave-arrow-left" @click="goTable"></div>
     </div>
     <div class="left">
-      <div class="change-con" @click="changeEchart">
+      <!-- <div class="change-con" @click="changeEchart">
         <img src="../../assets/image/menu/change-chart-icon.png" class="change-chart-icon" alt="Change">
         显示模式切换
-      </div>
-      <wave v-if="Object.keys(waveFormData).length !== 0 && !showMoreLine" :whatSize="2" :chartData="waveFormData"  @selectedComponent1="selectedComponent1"/>
-      <more-line-echart v-if="showMoreLine" :chartData="waveFormData" @selectedComponent1="selectedComponent1"></more-line-echart>
+      </div> -->
+      <wave v-if="Object.keys(waveFormData).length !== 0" :whatSize="2" :chartData="waveFormData"  @selectedComponent1="selectedComponent1"/>
+      <!-- <more-line-echart v-if="showMoreLine" :chartData="waveFormData" @selectedComponent1="selectedComponent1"></more-line-echart> -->
     </div>
     <div class="right">
       <div class="right_card">
@@ -53,6 +53,10 @@ export default {
     tableId: {
       type: Number,
       default: null
+    },
+    showTableId: {
+      type: Number,
+      default: null
     }
   },
   components: {
@@ -86,7 +90,9 @@ export default {
      filteringName: "滤波",
      disable: false,
      pointx:[],
-     showMoreLine: false
+     showMoreLine: false,
+     showId: null,
+     waveId: null
     }
   },
   watch: {
@@ -98,6 +104,9 @@ export default {
         }
       },
       immediate: true
+    },
+    showTableId(vale) {
+      this.showId = value;
     }
   },
 	created(){
@@ -122,7 +131,7 @@ export default {
       this.$http.get(`/data/wave_graph?day=${sessionStorage.getItem('toDay')}&id=${value}&getInfo=true`).then(res=>{
         this.waveFormData = res.data;
         const info = res.data.info;
-        this.list[0].content = info.signalTime;
+        this.list[0].content = this.showId;
         this.list[1].content = info.duration;
         this.list[2].content = info.path;
         this.list[3].content = info.cList[0];
@@ -160,7 +169,7 @@ export default {
     },
     previous(data){   //上一个下一个
       if(data === 1){
-        if(this.id <= 1){
+        if(this.showId <= 1){
           this.$confirm("已经是第一条数据了", '提示', {
             type: 'warning',
             customClass: "errormessage",
@@ -170,14 +179,22 @@ export default {
           }).catch(() => {
           });
         }else{
-          this.id -= 1
-          this.getWaveData(this.id);
+          this.showId -= 1
+          this.getId(this.showId);
         }
       }else{
-        this.id += 1
-        this.getWaveData(this.id);
+        this.showId += 1
+        this.getId(this.showId);
       }
+      this.list[0].content = this.showId
       this.filteringName = '滤波';
+    },
+
+    getId(value) {
+      this.$http.get(`/scatter_data/get_id?showId=${value}`).then(res=>{
+        this.waveId = res.data
+        this.getWaveData(this.waveId);
+      })
     },
 
     filterdatasend(){     //滤波
