@@ -219,7 +219,7 @@ export default {
       if (!value) {
         return;
       }
-      else {
+      else if (this.dbStatus === 0) {
         this.showTipsDialog = true;
       }
       this.$http.get(`db/${value}/stat `).then(res=>{
