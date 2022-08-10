@@ -12,7 +12,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/api': {
-        target: `http://signal-detect-api.xiaxudong.com`, //请求后台接口
+        target: `http://signal-detect-api.xiaxudong.com:8085`, //请求后台接口
         changeOrigin: true, // 允许跨域
         pathRewrite: {
           '^/api' : '' // 重写请求

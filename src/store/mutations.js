@@ -22,6 +22,9 @@ const mutations = {
   },
   SETDATASETDATE(state,value) {
     state.dataSetid = value;
+  },
+  SETLOCATIONID(state,value) {
+    state.locationIds = value;
   }
 }
 

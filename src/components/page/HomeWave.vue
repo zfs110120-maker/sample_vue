@@ -105,8 +105,14 @@ export default {
       },
       immediate: true
     },
-    showTableId(vale) {
-      this.showId = value;
+    showTableId: {
+      handler(value) {
+        if (value) {
+          this.showId = value;
+          this.list[0].content = this.showId;
+        }
+      },
+      immediate: true
     }
   },
 	created(){

@@ -115,7 +115,7 @@ export default {
 	},
 
   computed: {
-    ...mapState(['scatterIds']),
+    ...mapState(['scatterIds', 'locationIds']),
   },
 
   mounted(){
@@ -155,7 +155,8 @@ export default {
         sort: sort,
         asc: asc,
         page: data.pagesize,
-        pageSize: data.singlePageNum
+        pageSize: data.singlePageNum,
+        locationIds: this.locationIds !== '' ? this.locationIds : []
       }).then(res=>{
         const data = res.data;
         this.tableData = data.data;

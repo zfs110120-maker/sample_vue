@@ -71,7 +71,7 @@
     <popup-get-params :show-get-dialog.sync="showGetDialog" :source-id="isChoseDb" @cancleCollect="cancleCollect" @collect="collect" />
 
     <!-- 查看数据的提示 -->
-    <popup-tips :show-tips-dialog.sync="showTipsDialog" />
+    <popup-tips :show-tips-dialog="showTipsDialog" />
   </div>
 </template>
 <script>
@@ -180,7 +180,7 @@ export default {
     }
   },
   methods:{
-    ...mapMutations(['SETCOLLECTION', 'SETDATASETDATE']),
+    ...mapMutations(['SETCOLLECTION', 'SETDATASETDATE', 'SETLOCATIONID']),
 
     handlePubChange() {
       if (this.dbStatus) {
@@ -209,7 +209,6 @@ export default {
       }
     },
     refresh(value){
-      this.showTipsDialog = true;
       this.locationgRessend(value);
     },
 
@@ -219,6 +218,9 @@ export default {
     locationgRessend(value){
       if (!value) {
         return;
+      }
+      else {
+        this.showTipsDialog = true;
       }
       this.$http.get(`db/${value}/stat `).then(res=>{
         this.showTipsDialog = false;
@@ -294,11 +296,20 @@ export default {
       //   return;
       // }
       let dataSetids = []
+      let locationIds = []
       this.multipleSelection.forEach((item, index) => {
         dataSetids.push(...item.dayList)
+        locationIds.push(item.id)
       })
       let dataSetid = Array.from(new Set(dataSetids));
       this.SETDATASETDATE(dataSetid);
+      if (this.tableData.length == this.multipleSelection.length) {
+        this.SETLOCATIONID('');
+      }
+      else {
+        this.SETLOCATIONID(locationIds);
+      }
+
 
       this.$router.push("/homeinstall");
     },

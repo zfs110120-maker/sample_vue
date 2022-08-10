@@ -122,7 +122,7 @@ export default {
     this.finalSelectDate = [];
   },
   computed: {
-    ...mapState(['dataSetid']),
+    ...mapState(['dataSetid', 'locationIds']),
 
     showData({trendChartdata, scatterData, DDatasendData, smallWaveform}) {
       let result = {trendChartdata, scatterData, DDatasendData, smallWaveform}
@@ -201,7 +201,8 @@ export default {
       this.scatterDatasend(this.defaultValue);
     },
     trendChartdatasend(toDay){   //趋势图数据
-      this.$http.get(`/data/trend_charts?dbId=${this.sourceId}&day=${this.defaultValue}`).then(res=>{
+      let locationIdsCopy = this.locationIds !== '' ? this.locationIds.join(',') : ''
+      this.$http.get(`/data/trend_charts?dbId=${this.sourceId}&day=${this.defaultValue}&locationIds=${locationIdsCopy}`).then(res=>{
         const data = res.data
         this.trendChartdata = data.data;
         this.sampleCount = data.sampleCount;
@@ -227,12 +228,14 @@ export default {
     },
 
     DDatasend(toDay){   //3D柱状图数据
-      this.$http.get(`/data/histogram?dbId=${this.sourceId}&startTime=${sessionStorage.getItem('startTime')}&endTime=${sessionStorage.getItem('endTime')}&channelId=${sessionStorage.getItem('channelId') || 1}&phaseMove=${this.phaseShift}&day=${sessionStorage.getItem('toDay')}`).then(res=>{
+      let locationIdsCopy = this.locationIds !== '' ? this.locationIds.join(',') : ''
+      this.$http.get(`/data/histogram?dbId=${this.sourceId}&startTime=${sessionStorage.getItem('startTime')}&endTime=${sessionStorage.getItem('endTime')}&channelId=${sessionStorage.getItem('channelId') || 1}&phaseMove=${this.phaseShift}&day=${sessionStorage.getItem('toDay')}&locationIds=${locationIdsCopy}`).then(res=>{
         this.DDatasendData = res.data;
       })
     },
     scatterDatasend(toDay){   //散点图数据
-      this.$http.get(`/data/scatter_graph?dbId=${this.sourceId}&startTime=${sessionStorage.getItem('startTime')}&endTime=${sessionStorage.getItem('endTime')}&channelId=${sessionStorage.getItem('channelId') || 1}&phaseMove=${this.phaseShift}&day=${sessionStorage.getItem('toDay')}`).then(res=>{
+      let locationIdsCopy = this.locationIds !== '' ? this.locationIds.join(',') : ''
+      this.$http.get(`/data/scatter_graph?dbId=${this.sourceId}&startTime=${sessionStorage.getItem('startTime')}&endTime=${sessionStorage.getItem('endTime')}&channelId=${sessionStorage.getItem('channelId') || 1}&phaseMove=${this.phaseShift}&day=${sessionStorage.getItem('toDay')}&locationIds=${locationIdsCopy}`).then(res=>{
         this.scatterData = res.data;
       })
     },
