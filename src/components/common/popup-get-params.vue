@@ -9,13 +9,22 @@
       <div class="line"></div>
 
       <div class="content-con">
-        <p>时基设置</p>
-        <input v-model="timeBase" oninput="value=value.replace(/[^\d]/g,'')" placeholder="请输入内容" class="file-name">
-      </div>
+          自动阈值：
+          <el-switch v-model="autoThreshold" active-color="#3e80bd" :active-value="1" :inactive-value="0" inactive-color="#ccc" :width="40"
+            @change="handlePubChange()">
+          </el-switch>
+        </div>
 
       <div class="content-con">
-        <p>阈值设置</p>
-        <input v-model="threshold" oninput="value=value.replace(/[^\d]/g,'')" placeholder="请输入内容" class="file-name">
+        <span>时  基  设  置：</span>
+        <el-input v-model="timeBase" oninput="value=value.replace(/[^\d]/g,'')" placeholder="请输入内容" class="file-name"></el-input>
+      </div>
+
+      <div class="content-con" v-for="(item, index) in thresholdCh">
+        传感器{{ index | indexMap }}量程：
+        <el-input v-model="thresholdCh[index]" oninput="value=value.replace(/[^\d]/g,'')" :disabled="inputStatus" placeholder="请输入内容" class="input-name"></el-input> mV/div
+        <span class="word-style">传感器{{ index | indexMap }}阈值：</span>
+        <el-input v-model="scaleCh[index]" oninput="value=value.replace(/[^\d]/g,'')" :disabled="inputStatus" placeholder="请输入内容" class="input-name"></el-input> mV
       </div>
 
       <div class="btn-group">
@@ -27,6 +36,20 @@
 </template>
 
 <script>
+
+export function enums(key, values, defaultValue = '') {
+  if (typeof values !== 'object') {
+    return defaultValue;
+  }
+
+  if (typeof values[key] != 'undefined') {
+    return values[key];
+  }
+  else {
+    return defaultValue;
+  }
+};
+
 export default {
   props: {
     showGetDialog: {
@@ -38,11 +61,25 @@ export default {
       default: 0
     }
   },
+  filters: {
+    indexMap(value) {
+      return enums(value, {
+        0: '一',
+        1: '二',
+        2: '三',
+        3: '四'
+      });
+    }
+  },
   data() {
     return {
-      timeBase: null,
+      timeBase: 10,
       threshold: null,
-      isShowGetDialog: false
+      autoThreshold: false,
+      isShowGetDialog: false,
+      inputStatus: false,
+      thresholdCh: [ '100', '100', '100', '100' ],
+      scaleCh: [ '300','300', '300', '300' ]
     }
   },
   watch: {
@@ -55,12 +92,22 @@ export default {
       this.$emit('update:showGetDialog', false);
       this.$emit('cancleCollect', true)
     },
+    handlePubChange() {
+      if (!this.autoThreshold) {
+        this.inputStatus = false
+      }
+      else {
+        this.inputStatus = true
+      }
+    },
     handCollectionOk() {
       this.$emit('cancleCollect', false)
       this.$http.post('/sample/start', {
         dbId: this.sourceId,
         argTime: Number(this.timeBase),
-        argThreshold: Number(this.threshold)
+        autoThreshold: this.autoThreshold === 0 ? false : true,
+        thresholdCh: this.thresholdCh,
+        scaleCh: this.scaleCh
       }).then(res=>{
         // this.setStartTime();
         this.$emit('update:showGetDialog', false);
@@ -88,9 +135,8 @@ export default {
   top: 50%;
   transform: translate(-50%, -50%);
   width: 750px;
-  height: 302px;
+  height: 532px;
   background: #fff;
-  text-align: center;
 }
 
 .title-con {
@@ -118,24 +164,37 @@ export default {
 }
 
 .content-con {
-  display: flex;
-  justify-content: center;
+  /* display: flex; */
   font-size: 20px;
   font-weight: 400;
   color: #666;
   margin-bottom: 24px;
+  padding-left: 30px;
 }
 
 .file-name {
-  margin-left: 28px;
-  width: 494px;
+  width: 528px;
   height: 32px;
   background: #fff;
   border-radius: 2px;
   font-size: 16px;
   font-weight: 400;
-  border: 1px solid #666666;
   padding-left: 17px;
+}
+
+
+.input-name {
+  width: 130px;
+  height: 32px;
+  background: #fff;
+  border-radius: 2px;
+  font-size: 16px;
+  font-weight: 400;
+  padding-left: 17px;
+}
+
+.word-style {
+  margin-left: 20px;
 }
 
 input:placeholder {

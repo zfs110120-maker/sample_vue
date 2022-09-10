@@ -108,8 +108,6 @@ export default {
       this.$emit('getTableList',{pagesize: 1,singlePageNum: Number(this.childSinglePageNum)})
       this.childCurrentPage = 1;
       // this.btnStatus()
-      // console.log(this.childCurrentPage,this.childTotalPage)
-      // console.log(this.nextPage)
     },
     goFirstPage() { //首页
       // this.getTableList(1, this.childSinglePageNum);

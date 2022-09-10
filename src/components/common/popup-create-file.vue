@@ -83,7 +83,6 @@ export default {
         })
         return;
       }
-      console.log( this.parentId);
 
       this.$http.post('/menu', {
         parentId: this.dbId,

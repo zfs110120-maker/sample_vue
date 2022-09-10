@@ -56,7 +56,7 @@
       <div class="progress sensor-left">
         <div v-for="(item, index) in collecStatusList" class="progress-line">
           <p class="sensor-name">传感器 {{ index + 1 }}</p>
-          <el-input-number v-if="index !== 3" v-model="collecStatusList[index].num" controls-position="right" :disabled="collecStatusList[index + 1].itemActive !== 1" :min="1"></el-input-number>
+          <el-input-number v-if="index !== 3" v-model="collecStatusList[index].num" controls-position="right" :disabled="collecStatusList[index + 1].itemActive !== 1"></el-input-number>
           <p v-if="index !== 3" class="sensor-m" :class="collecStatusList[index + 1].itemActive === 1 && 'color-change'">M</p>
         </div>
       </div>
@@ -156,7 +156,6 @@ export default {
       this.isEdit ? this.editDb(this.pid) : this.init()
     },
     isEdit(value) {
-      console.log(value)
       value ? this.editDb(this.pid) : this.init()
     },
     dbId(value) {
@@ -282,16 +281,20 @@ export default {
         channelStateList.push(item.itemActive)
       })
 
+
+
       this.$http.put('/db', {
         id: this.pid,
         ...this.form,
         channelStateList: channelStateList,
-        space12: this.collecStatusList[0].num || '',
-        space23: this.collecStatusList[1].num || '',
-        space34: this.collecStatusList[2].num || ''
+        space12: this.collecStatusList[0].num || null,
+        space23: this.collecStatusList[1].num || null,
+        space34: this.collecStatusList[2].num || null
       }).then(res=>{
         this.clickClose();
-        this.$emit('createNewTable', true);
+        if (!this.isEdit) {
+          this.$emit('createNewTable', true);
+        }
         this.$notify({
           title: '信息提示',
           message: '数据库修改成功',
@@ -313,7 +316,7 @@ export default {
           this.collecStatusList[3].itemActive = this.form.channelStateList[3]
           this.collecStatusList[0].num = this.form.space12
           this.collecStatusList[1].num = this.form.space23
-          this.collecStatusList[2].num = this.form.space34 && ''
+          this.collecStatusList[2].num = this.form.space34 || null
           this.collecStatusList.forEach((item, index) => {
             if (item.itemActive !== 4) {
               item.isChose = true

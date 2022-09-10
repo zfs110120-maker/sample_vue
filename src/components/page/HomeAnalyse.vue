@@ -27,22 +27,22 @@
           <div class="fenxi">
             <span class="content">相 位 偏 移：</span>
             <div class="eee1">
-              <el-input-number v-model="phaseShift" controls-position="right"></el-input-number>
-              <div class="btn" @click="changeNum(1)" style="margin:0 8px;">修改</div>
-              <div class="btn" @click="changeNum(2)" style="background:#3E80BD">恢复</div>
+              <el-input-number v-model="phaseShift" controls-position="right" @change="changeNum(1)"></el-input-number>
+              <!-- <div class="btn" @click="changeNum(1)" style="margin:0 8px;">修改</div> -->
+              <div class="btn" @click="changeNum(2)" style="background:#3E80BD; margin:0 8px;">恢复</div>
             </div>
           </div>
       </div>
     </div>
     <div class="bottom">
       <div class="chart">
-        <div class="text">PRPS图谱</div>
+        <div class="text">PRPS图谱-通道{{ channelId }}</div>
         <div class="bar-con">
           <bar v-if="Object.keys(showData.DDatasendData).length > 0 && DDshow" :unit="unit" :chartData="showData.DDatasendData" />
         </div>
       </div>
       <div class="chart">
-        <div class="text">PRPD图谱</div>
+        <div class="text">PRPD图谱-通道{{ channelId }}</div>
         <scatter v-if="echartShow" :chartData="showData.scatterData" @clickNode='clickNode' />
       </div>
       <div class="chart" >
@@ -76,6 +76,7 @@ export default {
   data() {
     return {
       defaultValue: '', // 默认值,搜索时赋值
+      oldValue: '',
       timeRanges: [],
       datedef: [
         // {"date": "2021-11-30"}
@@ -165,6 +166,7 @@ export default {
           }
           else {
             this.defaultValue = dateList[dateList.length - 1];
+            this.oldValue = dateList[dateList.length - 1];
           }
           sessionStorage.setItem('toDay', this.defaultValue);
           this.dataDayconfirm(this.defaultValue);
@@ -197,6 +199,14 @@ export default {
       if(data === 2){
         this.phaseShift = 0
       }
+
+      if (this.phaseShift < 0 ) {
+        this.phaseShift = this.phaseShift + 360
+      }
+      else if (this.phaseShift > 360) {
+        this.phaseShift = this.phaseShift - 360
+      }
+
       this.DDatasend(this.defaultValue);
       this.scatterDatasend(this.defaultValue);
     },
@@ -292,6 +302,7 @@ export default {
         Month = '0'+Month;
       }
       let toDay = Year+'-'+Month+'-'+day
+      this.oldValue = this.defaultValue
       this.defaultValue = toDay
       sessionStorage.setItem('toDay', this.defaultValue);
       if(this.datedef.findIndex((item)=>item.date==toDay) == -1){
@@ -301,6 +312,9 @@ export default {
           showCancelButton: false,
           center: "true"
         }).then(() => {
+          this.defaultValue = this.oldValue
+          this.finalSelectDate = [];
+          this.finalSelectDate.push(this.defaultValue);
         }).catch(() => {
         });
       }else{

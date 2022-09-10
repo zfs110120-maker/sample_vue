@@ -24,7 +24,9 @@ export default {
       dataZoom: [],
       axisLine: {},
       axisLabel: {},
-      grid:[]
+      grid:[],
+      min: null,
+      max: null
     };
   },
   computed: {
@@ -113,6 +115,8 @@ export default {
             axisTick: {
               show: false,
             },
+            min: xAxisData[0] - 1000,
+            max: xAxisData[xAxisData.length - 1] * 10,
             axisLabel: setAxisLabel(0),
             data: xAxisData,
             axisLine: {
@@ -126,6 +130,8 @@ export default {
             type: "category",
             gridIndex: 1,
             axisLabel: setAxisLabel(1),
+            min: xAxisData[0] - 1000,
+            max: xAxisData[xAxisData.length - 1] * 10,
             axisLine: {
               lineStyle: {
                 color: "#e0e6f1",
@@ -137,6 +143,8 @@ export default {
             type: "category",
             gridIndex: 2,
             axisLabel: setAxisLabel(2),
+            min: xAxisData[0] - 1000,
+            max: xAxisData[xAxisData.length - 1] * 10,
             axisLine: {
               lineStyle: {
                 color: "#e0e6f1",
@@ -148,6 +156,8 @@ export default {
             type: "category",
             gridIndex: 3,
             axisLabel: setAxisLabel(3),
+            min: xAxisData[0] - 1000,
+            max: xAxisData[xAxisData.length - 1] * 10,
             axisLine: {
               lineStyle: {
                 color: "#e0e6f1",
@@ -323,9 +333,9 @@ export default {
     xData() {
       let arr = [];
       let min = this.chartData.t[0], max = this.chartData.t[this.chartData.t.length-1];
-      min = Math.floor(min);
-      max = Math.ceil(max);
-      for (let i = min; i < max; i++) {
+      this.min = Math.floor(min) - 1000;
+      this.max = Math.ceil(max) * 10;
+      for (let i = this.min; i < this.max; i++) {
         arr.push(i);
       }
       return arr;

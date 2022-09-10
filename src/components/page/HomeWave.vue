@@ -70,10 +70,10 @@ export default {
         {name:'序号',content:""},
         {name:'时间',content:""},
         {name:'设备',content:""},
-        {name:'通道1',content:""},
-        {name:'通道2',content:""},
-        {name:'通道3',content:""},
-        {name:'通道4',content:""}
+        {name:'通道1幅值',content:""},
+        {name:'通道2幅值',content:""},
+        {name:'通道3幅值',content:""},
+        {name:'通道4幅值',content:""}
         ],
       list2:[
         {name:'1超前2',content:''},
@@ -92,7 +92,8 @@ export default {
      pointx:[],
      showMoreLine: false,
      showId: null,
-     waveId: null
+     waveId: null,
+     isEnd: false
     }
   },
   watch: {
@@ -189,7 +190,9 @@ export default {
           this.getId(this.showId);
         }
       }else{
-        this.showId += 1
+        if (!this.isEnd) {
+          this.showId += 1
+        }
         this.getId(this.showId);
       }
       this.list[0].content = this.showId
@@ -198,8 +201,24 @@ export default {
 
     getId(value) {
       this.$http.get(`/scatter_data/get_id?showId=${value}`).then(res=>{
-        this.waveId = res.data
-        this.getWaveData(this.waveId);
+        if (res.data) {
+          this.isEnd = false;
+          this.waveId = res.data
+          this.getWaveData(this.waveId);
+        }
+        else {
+          this.isEnd = true;
+          this.showId -= 1
+          this.list[0].content = this.showId
+          this.$confirm("已经是最后一条数据了", '提示', {
+            type: 'warning',
+            customClass: "errormessage",
+            showCancelButton: false,
+            center: "true"
+          }).then(() => {
+          }).catch(() => {
+          });
+        }
       })
     },
 

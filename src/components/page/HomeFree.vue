@@ -111,6 +111,10 @@ export default {
     isChoseDb: {
       type: Number,
       default: 0
+    },
+    isRefresh: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -177,6 +181,11 @@ export default {
   watch: {
     isChoseDb(value) {
       this.refresh(value);
+    },
+    isRefresh(value) {
+      if (value) {
+        this.refresh(this.isChoseDb)
+      }
     }
   },
   methods:{
@@ -244,6 +253,7 @@ export default {
         })
 
         this.tableData.forEach(item => {
+          item.ratio = item.ratio * 100
           if(item.color){
             this.positionList.push({ id:item.id, color:item.color, position: item.displayLocation, big: false });
           };
@@ -349,7 +359,7 @@ export default {
         tooltip: {
           trigger: 'item',
           formatter:(parmas)=>{
-            return `${parmas.marker}${parmas.name}</br>${parmas.value * 100}%`
+            return `${parmas.marker}${parmas.name}</br>${parmas.value}%`
           }
         },
         legend: {

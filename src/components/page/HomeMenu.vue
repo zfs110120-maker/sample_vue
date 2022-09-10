@@ -12,7 +12,7 @@
 
         <div class="line-middle"></div>
 
-        <el-tree class="table-con" :data="askFilelist" ref="dataConfigTree" node-key="id" highlight-current default-expand-all @node-click="getReadDbcontents">
+        <el-tree class="table-con" :data="askFilelist" ref="dataConfigTree" node-key="id" :current-node-key="choseDbId" :highlight-current="true" default-expand-all @node-click="getReadDbcontents">
           <span class="custom-tree-node" slot-scope="{ node, data }">
             <img class="img-icon" v-if="data.type === 'db'" src="../../assets/image/menu/db.png" alt="">
             <span class="db-name">{{ data.name }}</span>
@@ -22,7 +22,7 @@
       </div>
       <!-- 右侧 -->
       <div class="right_box">
-        <home-free @showLeft="showLeft" :is-chose-db="sourceId"></home-free>
+        <home-free @showLeft="showLeft" :is-chose-db="sourceId" :is-refresh="isRefresh"></home-free>
       </div>
     </div>
 
@@ -75,7 +75,9 @@ export default {
       tableData: [],
       sampleCount: 0,
       parentId: null,
-      sourceId: null
+      sourceId: null,
+      choseDbId: null,
+      isRefresh: false
     }
   },
   computed: {
@@ -88,21 +90,27 @@ export default {
     }
     if(this.collection || sessionStorage.getItem('model') === 'true') {
       this.isShowLeft = false;
-      this.$refs.dataConfigTree.setCurrentKey(Number(sessionStorage.getItem('samplingDbId')));
       this.sourceId = sessionStorage.getItem('samplingDbId');
       this.choseDb(sessionStorage.getItem('samplingDbId'));
+    }
+
+    if (sessionStorage.getItem('choseDbId')) {
+      // 数据表的sourceid
+      this.sourceId = Number(sessionStorage.getItem('sourceId'))
+      this.choseDbId = Number(sessionStorage.getItem('choseDbId'))
+      this.$nextTick(() => {
+        this.$refs.dataConfigTree.setCurrentKey(this.choseDbId);
+      })
+      this.choseDb(this.choseDbId);
     }
   },
   mounted(){
     this.getAskFilelist();
-    // 数据表的id
+    // 数据表的sourceid
+    this.sourceId = Number(sessionStorage.getItem('sourceId'))
+
     if (sessionStorage.getItem('choseDbId')) {
-      // 数据表的sourceid
-      this.sourceId = Number(sessionStorage.getItem('sourceId'))
-      this.$nextTick(() => {
-        this.$refs.dataConfigTree.setCurrentKey(Number(sessionStorage.getItem('choseDbId')));
-      })
-      this.choseDb(Number(sessionStorage.getItem('choseDbId')));
+      this.isRefresh = true;
     }
   },
   methods: {

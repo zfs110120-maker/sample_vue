@@ -13,7 +13,7 @@ export default {
     return {
       myEchart: null,
       step: 0,
-      stepNum: 3,
+      stepNum: 30,
       sum:0,    //x轴的总和
       timer:null,
       zAxis3D:{},
