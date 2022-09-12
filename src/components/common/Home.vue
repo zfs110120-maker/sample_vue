@@ -13,13 +13,15 @@
       </div>
 
       <div class="tab_box">
-        <div class="tab" v-for="(item, index) in tabList" :key="'tab' + index" :class="tabActive === item.path && 'active-style'">
-          <div class="left-tab-con">
-            <img v-if="tabActive === item.path" src="../../assets/image/login/select.png" class="icon" alt="" />
-            <img v-else src="../../assets/image/login/unselect.png" class="icon" alt="" />
-            <p>{{ item.text }}</p>
+        <div class="tab-width">
+          <div class="tab" v-for="(item, index) in tabList" :key="'tab' + index" :class="tabActive === item.path && 'active-style'">
+            <div class="left-tab-con">
+              <img v-if="tabActive === item.path" src="../../assets/image/login/select.png" class="icon" alt="" />
+              <img v-else src="../../assets/image/login/unselect.png" class="icon" alt="" />
+              <p>{{ item.text }}</p>
+            </div>
+            <div v-if="index !== tabList.length - 1" class="line"></div>
           </div>
-          <div v-if="index !== tabList.length - 1" class="line"></div>
         </div>
 
         <div class="back" v-if="tabActive != '/homedata'" @click="goBack">返回</div>
@@ -205,6 +207,11 @@ export default {
   width: 650px;
 }
 
+.tab-width {
+  width: 555px;
+  display: flex;
+}
+
 .back {
   margin-left: 55px;
   font-size: 18px;
@@ -228,7 +235,6 @@ export default {
   font-size: 20px;
   font-weight: 400;
   color: #c4c4c4;
-  cursor: pointer;
 }
 
 .icon {
@@ -241,6 +247,7 @@ export default {
   font-size: 20px;
   font-weight: bold;
   color: #fff;
+  cursor: pointer;
 }
 
 .line {

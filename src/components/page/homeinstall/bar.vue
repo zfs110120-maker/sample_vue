@@ -17,7 +17,11 @@ export default {
       sum:0,    //x轴的总和
       timer:null,
       zAxis3D:{},
-      end: 20
+      end: 20,
+      initValue: -10,
+      echartData: [],
+      endIndex: 0,
+      startIndex: 0
     };
   },
   props: {
@@ -48,9 +52,30 @@ export default {
       return list
     },
     echartOptions({step}) {
-      let min = this.chartData.x[step]
-      let max = this.chartData.x[step + this.stepNum]
-      const echartData = this.showData.slice(step, step + this.stepNum);
+      // let min = this.chartData.x[step]
+      // let max = this.chartData.x[step + this.stepNum]
+      let min = this.initValue.toFixed(1)
+      let max = (this.initValue + 10).toFixed(1)
+      // this.echartData = []
+      // const echartData = this.showData.slice(step, step + this.stepNum);
+      // this.showData.forEach(item => {
+      //   if (this.initValue < item[0] < this.initValue + 10) {
+      //     this.echartData.push(item);
+      //   }
+      // })
+      for (let i = this.endIndex; i < this.showData.length; i++) {
+        if (this.showData[i][0] > this.initValue + 10) {
+          this.endIndex = i
+          break
+        }
+      }
+      for (let i = this.startIndex; i < this.showData.length; i++) {
+        if (this.showData[i][0] >= this.initValue) {
+          this.startIndex = i
+          break
+        }
+      }
+      this.echartData = this.showData.slice(this.startIndex, this.endIndex)
       if(this.unit === 'mV'){
 		    this.zAxis3D = {
           name: '',
@@ -126,7 +151,7 @@ export default {
           {
             type: "bar3D",
             barSize: 3,
-            data: echartData,
+            data: this.echartData,
             grid3DIndex:1,
             label: { show: false },
             itemStyle: {
@@ -214,12 +239,13 @@ export default {
   methods: {
     autoMove() {
       this.timer = setInterval(() => {
-        const stepNum = this.chartData.x.length - 1 - this.step
-        if (stepNum < this.stepNum) {
-          this.stepNum = stepNum
-        }
-        this.step += this.stepNum;
-        if(this.step >= this.chartData.x.length - 1) this.step = 0
+        // const stepNum = this.chartData.x.length - 1 - this.step
+        // if (stepNum < this.stepNum) {
+        //   this.stepNum = stepNum
+        // }
+        // this.step += this.stepNum;
+        // if(this.step >= this.chartData.x.length - 1) this.step = 0
+        this.initValue += 0.2
       }, 200);
       this.$once("hook:beforeDestroy", () => {
         clearInterval(this.timer);

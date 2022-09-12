@@ -48,7 +48,7 @@
       <div class="chart" >
         <div class="text">波形图</div>
         <img class="detail-icon" v-show="Object.keys(smallWaveform).length !== 0" @click="goWave" src="../../assets/image/menu/detail-icon.png" alt="" />
-        <wave :whatSize="1" v-if="Object.keys(smallWaveform).length !== 0" :chartData="smallWaveform"/>
+        <wave :what-size="1" v-if="Object.keys(smallWaveform).length !== 0" :chartData="smallWaveform"/>
       </div>
     </div>
   </div>

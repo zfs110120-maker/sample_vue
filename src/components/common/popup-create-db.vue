@@ -295,6 +295,9 @@ export default {
         if (!this.isEdit) {
           this.$emit('createNewTable', true);
         }
+        else {
+          this.$emit('editData', true);
+        }
         this.$notify({
           title: '信息提示',
           message: '数据库修改成功',

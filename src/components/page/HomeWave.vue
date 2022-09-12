@@ -9,7 +9,7 @@
         <img src="../../assets/image/menu/change-chart-icon.png" class="change-chart-icon" alt="Change">
         显示模式切换
       </div> -->
-      <wave v-if="Object.keys(waveFormData).length !== 0" :whatSize="2" :chartData="waveFormData"  @selectedComponent1="selectedComponent1"/>
+      <wave v-if="Object.keys(waveFormData).length !== 0" :what-size="2" :chartData="waveFormData"  @selectedComponent1="selectedComponent1"/>
       <!-- <more-line-echart v-if="showMoreLine" :chartData="waveFormData" @selectedComponent1="selectedComponent1"></more-line-echart> -->
     </div>
     <div class="right">

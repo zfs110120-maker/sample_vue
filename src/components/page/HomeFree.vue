@@ -115,6 +115,10 @@ export default {
     isRefresh: {
       type: Boolean,
       default: false
+    },
+    updateRefresh: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -186,6 +190,9 @@ export default {
       if (value) {
         this.refresh(this.isChoseDb)
       }
+    },
+    updateRefresh(value) {
+      this.refresh(this.isChoseDb)
     }
   },
   methods:{
@@ -246,6 +253,8 @@ export default {
         this.collecStatusList[1].distance = data.baseInfo.space23 || 0
         this.collecStatusList[2].distance = data.baseInfo.space34 || 0
 
+        this.positionLength = data.baseInfo.space12 + data.baseInfo.space23 + data.baseInfo.space34
+
         this.sampleCount = data.signalNum
 
         data.baseInfo.channelStateList.forEach((item, index) => {
@@ -261,12 +270,12 @@ export default {
             this.$refs.multipleTableDevice.toggleRowSelection(item);
           })
         })
-        this.positionList.forEach(item=>{
-          if (item.position < 0) {
-            item.position = 0
-          }
-          this.positionLength += Number(item.position)
-        })
+        // this.positionList.forEach(item=>{
+        //   if (item.position < 0) {
+        //     item.position = 0
+        //   }
+        //   this.positionLength += Number(item.position)
+        // })
         this.getPie();
       })
     },

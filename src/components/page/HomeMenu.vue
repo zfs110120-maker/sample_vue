@@ -22,7 +22,7 @@
       </div>
       <!-- 右侧 -->
       <div class="right_box">
-        <home-free @showLeft="showLeft" :is-chose-db="sourceId" :is-refresh="isRefresh"></home-free>
+        <home-free @showLeft="showLeft" :is-chose-db="sourceId" :is-refresh="isRefresh" :update-refresh="updateRefresh"></home-free>
       </div>
     </div>
 
@@ -30,7 +30,7 @@
     <popup-create-file :show-create-dialog.sync="showCreateDialog" :parent-id="parentId" :db-id="dbDir" :file-name="fileName" :is-edit="isEdit" @createNewMenu="createNewMenu" />
 
     <!-- 填写通道名称和说明弹出框 -->
-    <popup-create-db :show-create-db-dialog.sync="showCreateDbDialog" :parent-id="parentId" :db-id="dbDir" :pid="sourceId" :is-edit="isEdit" @createNewTable="createNewTable" />
+    <popup-create-db :show-create-db-dialog.sync="showCreateDbDialog" :parent-id="parentId" :db-id="dbDir" :pid="sourceId" :is-edit="isEdit" @createNewTable="createNewTable" @editData="editData" />
   </div>
 </template>
 <script>
@@ -77,7 +77,8 @@ export default {
       parentId: null,
       sourceId: null,
       choseDbId: null,
-      isRefresh: false
+      isRefresh: false,
+      updateRefresh: false
     }
   },
   computed: {
@@ -120,6 +121,12 @@ export default {
       }
       else {
         this.isShowLeft = true;
+      }
+    },
+
+    editData(data) {
+      if (data) {
+        this.updateRefresh = !this.updateRefresh;
       }
     },
     handleHead(index) {
@@ -244,7 +251,7 @@ export default {
     },
 
     handModify(){//修改
-      if(!this.dbDir) {
+      if(!this.dbDir && !sessionStorage.getItem('choseDbId')) {
         this.$confirm("请选择一条数据操作", '提示', {
           type: 'warning',
           customClass: "errormessage",

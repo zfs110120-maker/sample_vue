@@ -67,7 +67,6 @@ export default {
       };
       let name1 = this.whatSize == 2 ? 'ns' : '';
       let yname = this.whatSize == 2 ? 'mV' : '';
-      let isShow = false;
       //小波形
       this.tooltip = this.whatSize == 2 ? {
         trigger: "axis",
@@ -90,7 +89,7 @@ export default {
           xAxisIndex: "all", // 实现多个图的贯穿 X 轴提示线
         },
       } : {};
-      this.dataZoom = this.whatSize == 2 ? [{ type: "inside", xAxisIndex: "all" }] : [];
+      this.dataZoom = this.whatSize == 2 ? [{ type: "inside", xAxisIndex: "all", start: 50, end: 82 }] : [];
       this.axisLine = { show: true };
       this.axisLabel = this.whatSize == 2 ? { show: true }: { show: false }
       this.grid = [
@@ -101,7 +100,10 @@ export default {
         {left:"60px",right:"40px", top: "14%", height: "81%" },
         {left:"60px",right:"40px", top: "95%", height: "1%" },
       ];
-      isShow = true
+      let isShow = this.whatSize == 2 ? true : false;
+
+      let min = this.whatSize == 2 ? (xAxisData[0] - 1000) : 'dataMin'
+      let max = this.whatSize == 2 ? (xAxisData[xAxisData.length - 1] * 10) : 'dataMax'
 
       let options = {
         tooltip: this.tooltip,
@@ -115,8 +117,8 @@ export default {
             axisTick: {
               show: false,
             },
-            min: xAxisData[0] - 1000,
-            max: xAxisData[xAxisData.length - 1] * 10,
+            min: min,
+            max: max,
             axisLabel: setAxisLabel(0),
             data: xAxisData,
             axisLine: {
@@ -130,8 +132,8 @@ export default {
             type: "category",
             gridIndex: 1,
             axisLabel: setAxisLabel(1),
-            min: xAxisData[0] - 1000,
-            max: xAxisData[xAxisData.length - 1] * 10,
+            min: min,
+            max: max,
             axisLine: {
               lineStyle: {
                 color: "#e0e6f1",
@@ -143,8 +145,8 @@ export default {
             type: "category",
             gridIndex: 2,
             axisLabel: setAxisLabel(2),
-            min: xAxisData[0] - 1000,
-            max: xAxisData[xAxisData.length - 1] * 10,
+            min: min,
+            max: max,
             axisLine: {
               lineStyle: {
                 color: "#e0e6f1",
@@ -156,8 +158,8 @@ export default {
             type: "category",
             gridIndex: 3,
             axisLabel: setAxisLabel(3),
-            min: xAxisData[0] - 1000,
-            max: xAxisData[xAxisData.length - 1] * 10,
+            min: min,
+            max: max,
             axisLine: {
               lineStyle: {
                 color: "#e0e6f1",
@@ -165,12 +167,14 @@ export default {
             },
           },
           {
-            data:xAxisData,
+            data: xAxisData,
             gridIndex: 4,
             name: name1,
             nameGap: 10,
+            min: min,
+            max: max,
             nameTextStyle: { fontSize: 20 },
-            show:false
+            show: isShow,
           },
           {
             data: this.xData(),
@@ -179,7 +183,7 @@ export default {
             nameTextStyle: { fontSize: 20 },
             gridIndex: 5,
             position:"bottom",
-            show:isShow
+            show: !isShow
           },
         ],
         yAxis: [
@@ -294,6 +298,7 @@ export default {
     },
     whatSize: {
       type: Number,
+      default: 0
     },
   },
   watch: {
@@ -333,8 +338,8 @@ export default {
     xData() {
       let arr = [];
       let min = this.chartData.t[0], max = this.chartData.t[this.chartData.t.length-1];
-      this.min = Math.floor(min) - 1000;
-      this.max = Math.ceil(max) * 10;
+      this.min = Math.floor(min);
+      this.max = Math.ceil(max);
       for (let i = this.min; i < this.max; i++) {
         arr.push(i);
       }
