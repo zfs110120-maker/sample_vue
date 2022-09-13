@@ -106,8 +106,8 @@ export default {
         dbId: this.sourceId,
         argTime: Number(this.timeBase),
         autoThreshold: this.autoThreshold === 0 ? false : true,
-        thresholdCh: this.thresholdCh,
-        scaleCh: this.scaleCh
+        thresholdCh: this.scaleCh,
+        scaleCh: this.thresholdCh
       }).then(res=>{
         // this.setStartTime();
         this.$emit('update:showGetDialog', false);
