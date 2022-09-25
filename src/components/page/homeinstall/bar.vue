@@ -246,6 +246,12 @@ export default {
         // this.step += this.stepNum;
         // if(this.step >= this.chartData.x.length - 1) this.step = 0
         this.initValue += 0.2
+        if (this.initValue > this.showData[this.showData.length - 1][0]) {
+          this.initValue = 0
+          this.startIndex = 0
+          this.endIndex = 0
+          this.echartData = []
+        }
       }, 200);
       this.$once("hook:beforeDestroy", () => {
         clearInterval(this.timer);

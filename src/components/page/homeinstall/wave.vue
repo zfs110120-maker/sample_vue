@@ -89,7 +89,7 @@ export default {
           xAxisIndex: "all", // 实现多个图的贯穿 X 轴提示线
         },
       } : {};
-      this.dataZoom = this.whatSize == 2 ? [{ type: "inside", xAxisIndex: "all", start: 50, end: 82 }] : [];
+      this.dataZoom = this.whatSize == 2 ? [{ type: "inside", xAxisIndex: "all", start: 1000 / (1000 + xAxisData[xAxisData.length - 1] * 10) * 100, end: 82 }] : [];
       this.axisLine = { show: true };
       this.axisLabel = this.whatSize == 2 ? { show: true }: { show: false }
       this.grid = [
