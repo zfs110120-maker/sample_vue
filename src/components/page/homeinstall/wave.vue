@@ -89,7 +89,7 @@ export default {
           xAxisIndex: "all", // 实现多个图的贯穿 X 轴提示线
         },
       } : {};
-      this.dataZoom = this.whatSize == 2 ? [{ type: "inside", xAxisIndex: "all", start: 1000 / (1000 + xAxisData[xAxisData.length - 1] * 10) * 100, end: 82 }] : [];
+      this.dataZoom = this.whatSize == 2 ? [{ type: "inside", xAxisIndex: "all"}] : [];
       this.axisLine = { show: true };
       this.axisLabel = this.whatSize == 2 ? { show: true }: { show: false }
       this.grid = [
@@ -102,8 +102,8 @@ export default {
       ];
       let isShow = this.whatSize == 2 ? true : false;
 
-      let min = this.whatSize == 2 ? (xAxisData[0] - 1000) : 'dataMin'
-      let max = this.whatSize == 2 ? (xAxisData[xAxisData.length - 1] * 10) : 'dataMax'
+      // let min = this.whatSize == 2 ? (xAxisData[0] - 1000) : 'dataMin'
+      // let max = this.whatSize == 2 ? (xAxisData[xAxisData.length - 1] * 10 / 2) : 'dataMax'
 
       let options = {
         tooltip: this.tooltip,
@@ -117,8 +117,8 @@ export default {
             axisTick: {
               show: false,
             },
-            min: min,
-            max: max,
+            // min: min,
+            // max: max,
             axisLabel: setAxisLabel(0),
             data: xAxisData,
             axisLine: {
@@ -132,8 +132,8 @@ export default {
             type: "category",
             gridIndex: 1,
             axisLabel: setAxisLabel(1),
-            min: min,
-            max: max,
+            // min: min,
+            // max: max,
             axisLine: {
               lineStyle: {
                 color: "#e0e6f1",
@@ -145,8 +145,8 @@ export default {
             type: "category",
             gridIndex: 2,
             axisLabel: setAxisLabel(2),
-            min: min,
-            max: max,
+            // min: min,
+            // max: max,
             axisLine: {
               lineStyle: {
                 color: "#e0e6f1",
@@ -158,8 +158,8 @@ export default {
             type: "category",
             gridIndex: 3,
             axisLabel: setAxisLabel(3),
-            min: min,
-            max: max,
+            // min: min,
+            // max: max,
             axisLine: {
               lineStyle: {
                 color: "#e0e6f1",
@@ -171,8 +171,8 @@ export default {
             gridIndex: 4,
             name: name1,
             nameGap: 10,
-            min: min,
-            max: max,
+            // min: min,
+            // max: max,
             nameTextStyle: { fontSize: 20 },
             show: isShow,
           },
